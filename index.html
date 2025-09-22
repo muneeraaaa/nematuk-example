@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ne'matuk | Fight Food Waste in the UAE</title>
+
+    <!-- Swiper.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
+
+    <!-- Google Fonts: Poppins & Amiri (for Arabic) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Amiri:wght@700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome for Social Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+    <style>
+        /* --- "Aurora" Color Scheme --- */
+        :root {
+            --bg-dark: #1A1D2E;
+            --primary-accent: #A450E4;
+            /* Vibrant Violet */
+            --secondary-accent: #49E7CD;
+            /* Bright Cyan */
+            --text-light: #F0F4F8;
+            --glass-bg: rgba(240, 244, 248, 0.08);
+            --glass-border: rgba(240, 244, 248, 0.2);
+            --dark-overlay-bg: rgba(26, 29, 46, 0.6);
+            --accent-gradient: linear-gradient(90deg, var(--primary-accent) 0%, var(--secondary-accent) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        html,
+        body {
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .swiper-container {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            position: relative;
+            z-index: 1;
+        }
+
+        .swiper-slide {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            transform-style: preserve-3d;
+            background-color: transparent;
+        }
+
+        .swiper-pagination-vertical.swiper-pagination-bullets {
+            right: 15px;
+        }
+
+        .swiper-pagination-bullet {
+            background: var(--secondary-accent);
+            height: 12px;
+            width: 12px;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .swiper-pagination-bullet-active {
+            background: var(--primary-accent) !important;
+            height: 35px;
+            border-radius: 8px;
+            opacity: 1;
+            box-shadow: 0 0 12px 3px var(--primary-accent);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            width: 100%;
+            z-index: 2;
+            position: relative;
+            text-align: center;
+        }
+
+        .section-tag {
+            color: var(--secondary-accent);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 1.2rem;
+        }
+
+        h2 {
+            font-size: 3.8rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            line-height: 1.1;
+            color: var(--text-light);
+        }
+
+        p {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--text-light);
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .slide-background {
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 29, 46, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1;
+        }
+
+        #hero .slide-background {
+            background-color: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+
+        #hero .overlay {
+            background: var(--dark-overlay-bg);
+        }
+
+        #hero h1 {
+            font-size: clamp(4rem, 8vw, 6.5rem);
+            margin-bottom: 0;
+            color: var(--text-light);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        #hero .arabic-title {
+            font-size: clamp(4rem, 8vw, 6rem);
+            margin-bottom: 1rem;
+            color: var(--secondary-accent);
+        }
+
+        #hero .hero-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 800px;
+        }
+
+        .hero-logo-img {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 1.5rem;
+            border-radius: 100px;
+            animation: logo-glow 4s ease-in-out infinite;
+        }
+
+        @keyframes logo-glow {
+            0% {
+                box-shadow: 0 0 15px 0px var(--primary-accent), 0 0 20px 0px var(--secondary-accent);
+            }
+
+            50% {
+                box-shadow: 0 0 30px 5px var(--primary-accent), 0 0 45px 5px var(--secondary-accent);
+            }
+
+            100% {
+                box-shadow: 0 0 15px 0px var(--primary-accent), 0 0 20px 0px var(--secondary-accent);
+            }
+        }
+
+        .hero-social-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-icon-link {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid var(--glass-border);
+            text-decoration: none;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon-link:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--primary-accent), 0 0 30px var(--secondary-accent);
+        }
+
+        .horizontal-swiper {
+            width: 100%;
+            padding: 30px 0;
+        }
+
+        .horizontal-swiper .swiper-slide {
+            width: 360px;
+            height: 440px;
+            background: transparent;
+            overflow: visible;
+        }
+
+        .card-base {
+            width: 100%;
+            height: 100%;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: transform 0.4s ease, box-shadow 0.4s ease, background-image 0.4s ease, background-color 0.4s ease;
+            cursor: grab;
+            border: 1px solid var(--glass-border);
+        }
+
+        .card-base::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: inherit;
+            padding: 2px;
+            background: var(--accent-gradient);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card-base:hover,
+        .card-base.card-active {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--primary-accent), 0 0 35px var(--secondary-accent);
+            background-image: radial-gradient(circle, rgba(73, 231, 205, 0.15) 0%, rgba(164, 80, 228, 0.05) 100%);
+        }
+
+        .card-base:hover::before,
+        .card-base.card-active::before {
+            opacity: 1;
+        }
+
+        .impact-card {
+            justify-content: center;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .impact-icon {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 4rem;
+            color: rgba(240, 244, 248, 0.1);
+            transition: all 0.4s ease;
+        }
+
+        .impact-card:hover .impact-icon,
+        .impact-card.card-active .impact-icon {
+            color: var(--secondary-accent);
+            transform: rotate(-15deg) scale(1.1);
+        }
+
+        .impact-number {
+            font-size: 4.5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--secondary-accent);
+        }
+
+        .impact-title {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .impact-description {
+            font-size: 1rem;
+            color: var(--text-light);
+            opacity: 0.8;
+            margin-top: 1rem;
+            font-weight: 400;
+        }
+
+        .mission-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .mission-card {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .mission-icon {
+            font-size: 4rem;
+            color: var(--secondary-accent);
+            margin-bottom: 1.5rem;
+            transition: transform 0.4s ease;
+        }
+
+        .mission-card:hover .mission-icon {
+            transform: scale(1.1);
+        }
+
+        .mission-title {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .mission-description {
+            font-size: 1rem;
+            color: var(--text-light);
+            opacity: 0.8;
+            margin-top: 1rem;
+            font-weight: 400;
+        }
+
+        #join .join-container {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        #join h3 {
+            font-size: 1.5rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .join-movement-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2.5rem;
+            margin-bottom: 2.5rem;
+            border-radius: 50px;
+            background: var(--accent-gradient);
+            border: none;
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+
+        .join-movement-btn:hover {
+            box-shadow: 0 0 20px var(--primary-accent), 0 0 30px var(--secondary-accent);
+            transform: scale(1.05);
+        }
+
+        .join-movement-btn i {
+            font-size: 1.2rem;
+            margin-left: 0;
+            opacity: 0;
+            width: 0;
+            transition: all 0.4s ease;
+        }
+
+        .join-movement-btn:hover i {
+            margin-left: 0.75rem;
+            opacity: 1;
+            width: 1em;
+        }
+
+        .newsletter-form {
+            display: flex;
+            align-items: center;
+            max-width: 500px;
+            margin: auto;
+            background: var(--glass-bg);
+            border-radius: 50px;
+            padding: 0.5rem;
+            padding-left: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid var(--glass-border);
+        }
+
+        .newsletter-form:hover {
+            box-shadow: 0 0 15px var(--secondary-accent);
+        }
+
+        .newsletter-form input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            z-index: 1;
+            color: var(--text-light);
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .newsletter-form input::placeholder {
+            color: var(--text-light);
+            opacity: 0.7;
+        }
+
+        .newsletter-form button {
+            background: var(--accent-gradient);
+            color: var(--text-light);
+            border: none;
+            z-index: 1;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-form button:hover {
+            box-shadow: 0 0 15px var(--secondary-accent);
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 992px) {
+            .mission-grid {
+                grid-template-columns: 1fr;
+                max-width: 360px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h2 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="particles-js"></div>
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+
+            <!-- Slide 1: Hero -->
+            <section id="hero" class="swiper-slide">
+                <div class="slide-background"><video autoplay muted loop playsinline
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                        <source src="./img/forest.mp4" type="video/mp4">
+                    </video></div>
+                <div class="overlay"></div>
+                <div class="container hero-content">
+                    <img src="./img/logo.png" alt="Ne'matuk Logo" class="hero-logo-img">
+                    <h1>Ne'matuk</h1>
+                    <h2 class="arabic-title">نعمتك</h2>
+                    <p style="margin-bottom: 0;">Rescue delicious meals before they go to waste. Join thousands in the
+                        UAE saving money and fighting climate change, one bite at a time. It's the tastiest way to make
+                        a difference.</p>
+                    <div class="hero-social-links">
+                        <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon-link" aria-label="LinkedIn"><i
+                                class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <a href="./auth.html" class="join-movement-btn"><span>Join the Movement</span><i
+                            class="fas fa-arrow-right"></i></a>
+                </div>
+            </section>
+
+            <!-- Slide 2: About Us (Grid Layout) -->
+            <section id="about" class="swiper-slide slide-background">
+                <div class="overlay"></div>
+                <div class="container">
+                    <span class="section-tag">Our Mission</span>
+                    <h2>Empowering Our Community</h2>
+                    <p>We believe the power to change the world lies in local action. Ne'matuk connects neighbors with
+                        local businesses to create a cycle of opportunity, sustainability, and delicious food.</p>
+                    <div class="mission-grid">
+                        <div class="card-base mission-card"><i class="fas fa-hands-helping mission-icon"></i>
+                            <h3 class="mission-title">Save Meals</h3>
+                            <p class="mission-description">Strengthen our community's food security and reduce local
+                                landfill waste with every meal rescued.</p>
+                        </div>
+                        <div class="card-base mission-card"><i class="fas fa-store mission-icon"></i>
+                            <h3 class="mission-title">Support Local</h3>
+                            <p class="mission-description">Help local cafes, grocers, and restaurants turn potential
+                                loss into a new revenue stream.</p>
+                        </div>
+                        <div class="card-base mission-card"><i class="fas fa-users mission-icon"></i>
+                            <h3 class="mission-title">Unite Heroes</h3>
+                            <p class="mission-description">Join a movement of conscious consumers building a more
+                                sustainable future for the UAE.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 3: How It Works (Coverflow Effect) -->
+            <section id="how-it-works" class="swiper-slide slide-background">
+                <div class="overlay"></div>
+                <div class="container">
+                    <span class="section-tag">How It Works</span>
+                    <h2>Taste the Difference in 5 Steps</h2>
+                </div>
+                <div class="swiper horizontal-swiper how-swiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <div class="card-base impact-card"><i class="fas fa-mobile-screen-button impact-icon"></i>
+                                <div class="impact-number">1</div>
+                                <h3 class="impact-title">Explore Your City</h3>
+                                <p class="impact-description">Open the app and discover a live map of surplus 'Magic
+                                    Bags' from amazing eateries near you.</p>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="card-base impact-card"><i class="fas fa-credit-card impact-icon"></i>
+                                <div class="impact-number">2</div>
+                                <h3 class="impact-title">Secure Your Bag</h3>
+                                <p class="impact-description">Reserve your meal with a single tap. Pay securely in-app
+                                    and get ready for a delicious surprise.</p>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="card-base impact-card"><i class="fas fa-person-running impact-icon"></i>
+                                <div class="impact-number">3</div>
+                                <h3 class="impact-title">Collect with a Smile</h3>
+                                <p class="impact-description">Head to the store during the collection window, show your
+                                    digital receipt, and enjoy your rescued treat!</p>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="card-base impact-card"><i class="fas fa-chart-line impact-icon"></i>
+                                <div class="impact-number">4</div>
+                                <h3 class="impact-title">Track Your Impact</h3>
+                                <p class="impact-description">Watch your savings grow and see your environmental impact
+                                    on your personal dashboard.</p>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="card-base impact-card"><i class="fas fa-share-alt impact-icon"></i>
+                                <div class="impact-number">5</div>
+                                <h3 class="impact-title">Share the Love</h3>
+                                <p class="impact-description">Invite friends to join the movement and earn bonus rewards
+                                    as our community grows stronger together.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 4: The Ne'matuk Difference (Modified Coverflow Effect) -->
+            <section id="why-different" class="swiper-slide slide-background">
+                <div class="overlay"></div>
+                <div class="container">
+                    <span class="section-tag">Why We're Better</span>
+                    <h2>The Ne'matuk Advantage</h2>
+                </div>
+                <div class="swiper horizontal-swiper why-different-swiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <div class="card-base impact-card"><i class="fas fa-map-marked-alt impact-icon"></i>
+                                <div class="impact-number">UAE</div>
+                                <h3 class="impact-title">Built for the Emirates</h3>
+                                <p class="impact-description">We are by the community, for the community. Our platform
+                                    celebrates local flavors and businesses.</p>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="card-base impact-card"><i class="fas fa-check-double impact-icon"></i>
+                                <div class="impact-number">Choice</div>
+                                <h3 class="impact-title">Beyond the Surprise</h3>
+                                <p class="impact-description">We offer more transparent listings, giving you a clearer
+                                    idea of the delicious food you can rescue.</p>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="card-base impact-card"><i class="fas fa-chart-pie impact-icon"></i>
+                                <div class="impact-number">You</div>
+                                <h3 class="impact-title">Your Eco-Dashboard</h3>
+                                <p class="impact-description">Track your personal legacy with detailed stats on money
+                                    saved, meals rescued, and CO₂ prevented.</p>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="card-base impact-card"><i class="fas fa-star impact-icon"></i>
+                                <div class="impact-number">Wins</div>
+                                <h3 class="impact-title">Rewarding Good Deeds</h3>
+                                <p class="impact-description">Our loyalty program lets you earn points and unlock
+                                    exclusive rewards for fighting food waste.</p>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="card-base impact-card"><i class="fas fa-tags impact-icon"></i>
+                                <div class="impact-number">Deals</div>
+                                <h3 class="impact-title">Exclusive Partner Offers</h3>
+                                <p class="impact-description">Get access to special promotions and deals available only
+                                    to the Ne'matuk community members.</p>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="card-base impact-card"><i class="fas fa-comments impact-icon"></i>
+                                <div class="impact-number">Hub</div>
+                                <h3 class="impact-title">A Thriving Community</h3>
+                                <p class="impact-description">Join forums, share rescued food recipes, and connect with
+                                    fellow Food Heroes in our integrated hub.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 5: Join Us -->
+            <section id="join" class="swiper-slide slide-background">
+                <div class="overlay"></div>
+                <div class="container text-center join-container">
+                    <span class="section-tag">Become a Food Hero</span>
+                    <h2>Join The Community</h2>
+                    <p>Create an account to track your impact, save your favorite stores, and be part of our growing
+                        movement against food waste.</p>
+                    <a href="./auth.html" class="join-movement-btn"><span>Join the Movement</span><i
+                            class="fas fa-arrow-right"></i></a>
+                    <h3>Subscribe to Our Newsletter</h3>
+                    <p>Get the latest news, success stories, and special offers delivered right to your inbox.</p>
+                    <form class="newsletter-form" onsubmit="return false;"><input type="email"
+                            placeholder="Enter your email address"><button type="submit" aria-label="Subscribe"><i
+                                class="fas fa-paper-plane"></i></button></form>
+                </div>
+            </section>
+        </div>
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            particlesJS("particles-js", { "particles": { "number": { "value": 8, "density": { "enable": true, "value_area": 800 } }, "color": { "value": ["#A450E4", "#49E7CD"] }, "shape": { "type": "circle" }, "opacity": { "value": 0.2, "random": true }, "size": { "value": 150, "random": true, "anim": { "enable": true, "speed": 1.5, "size_min": 50, "sync": false } }, "line_linked": { "enable": false }, "move": { "enable": true, "speed": 1.5, "direction": "none", "random": true, "straight": false, "out_mode": "out", "bounce": false } }, "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": false }, "onclick": { "enable": false }, "resize": true } }, "retina_detect": true });
+
+            const mainSwiper = new Swiper('.swiper-container', {
+                direction: 'vertical', slidesPerView: 1, spaceBetween: 0, mousewheel: true, speed: 1000, grabCursor: true,
+                pagination: { el: '.swiper-pagination', clickable: true, },
+                effect: 'creative', creativeEffect: { prev: { shadow: true, translate: [0, 0, -400], rotate: [15, 0, 0], }, next: { translate: [0, '100%', 0], }, },
+            });
+
+            const howSwiper = new Swiper('.how-swiper', { effect: 'coverflow', grabCursor: true, centeredSlides: true, slidesPerView: 'auto', loop: false, speed: 600, coverflowEffect: { rotate: 30, stretch: 0, depth: 100, modifier: 1, slideShadows: false, }, });
+            const whyDifferentSwiper = new Swiper('.why-different-swiper', { effect: 'coverflow', grabCursor: true, centeredSlides: true, slidesPerView: 'auto', loop: false, speed: 600, coverflowEffect: { rotate: 20, stretch: -10, depth: 150, modifier: 1, slideShadows: false, }, });
+
+            const horizontalSections = [
+                { slideEl: document.querySelector('#how-it-works'), swiper: howSwiper },
+                { slideEl: document.querySelector('#why-different'), swiper: whyDifferentSwiper }
+            ];
+
+            const updateActiveCard = (swiper) => {
+                swiper.slides.forEach(slide => {
+                    const card = slide.querySelector('.card-base');
+                    if (card) card.classList.remove('card-active');
+                });
+                const activeSlide = swiper.slides[swiper.activeIndex];
+                if (activeSlide) {
+                    const activeCard = activeSlide.querySelector('.card-base');
+                    if (activeCard) activeCard.classList.add('card-active');
+                }
+            };
+
+            horizontalSections.forEach(({ swiper }) => { updateActiveCard(swiper); swiper.on('slideChange', () => updateActiveCard(swiper)); });
+
+            mainSwiper.on('slideChange', () => {
+                const isHorizontal = horizontalSections.some(s => s.slideEl === mainSwiper.slides[mainSwiper.activeIndex]);
+                mainSwiper.mousewheel.enabled = !isHorizontal;
+            });
+
+            const handleHorizontalScroll = (e, section) => {
+                e.stopPropagation();
+                if (e.deltaY > 0) {
+                    if (!section.swiper.isEnd) { section.swiper.slideNext(); }
+                    else { mainSwiper.mousewheel.enabled = true; mainSwiper.slideNext(); }
+                } else {
+                    if (!section.swiper.isBeginning) { section.swiper.slidePrev(); }
+                    else { mainSwiper.mousewheel.enabled = true; mainSwiper.slidePrev(); }
+                }
+            };
+
+            horizontalSections.forEach(section => { section.slideEl.addEventListener('wheel', (e) => handleHorizontalScroll(e, section), { passive: false }); });
+
+            document.querySelector('.hero-content .join-movement-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                const joinSlideIndex = Array.from(mainSwiper.slides).findIndex(slide => slide.id === 'join');
+                if (joinSlideIndex !== -1) mainSwiper.slideTo(joinSlideIndex);
+            });
+        });
+    </script>
+</body>
+
+</html>

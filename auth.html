@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up | Ne'matuk</title>
+
+    <!-- Swiper.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Social Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+    <style>
+        /* --- "Aurora" Color Scheme --- */
+        :root {
+            --bg-dark: #1A1D2E;
+            --primary-accent: #A450E4; /* Vibrant Violet */
+            --secondary-accent: #49E7CD; /* Bright Cyan */
+            --text-light: #F0F4F8;
+            --glass-bg: rgba(26, 29, 46, 0.6);
+            --glass-border: rgba(240, 244, 248, 0.2);
+            --accent-gradient: linear-gradient(90deg, var(--primary-accent) 0%, var(--secondary-accent) 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            padding: 1rem;
+        }
+
+        #particles-js { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; }
+
+        .auth-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 520px;
+            padding: 2.5rem 3rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            overflow: hidden;
+        }
+
+        .auth-tabs { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .tab-link {
+            background: none; border: none; color: var(--text-light); font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem; font-weight: 600; padding: 0.5rem 1rem; cursor: pointer;
+            opacity: 0.6; transition: all 0.3s ease; position: relative;
+        }
+        .tab-link::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 3px; background: var(--accent-gradient); transition: width 0.3s ease; }
+        .tab-link.active { opacity: 1; }
+        .tab-link.active::after { width: 100%; }
+
+        .swiper.auth-swiper { width: 100%; min-height: 540px; }
+        .swiper-slide { display: flex; align-items: center; justify-content: center; }
+
+        .form-content { width: 100%; max-height: 65vh; overflow-y: auto; padding-right: 15px; margin-right: -15px; }
+        .form-content::-webkit-scrollbar { width: 8px; }
+        .form-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+        .form-content::-webkit-scrollbar-thumb { background: var(--accent-gradient); border-radius: 4px; }
+        .form-content::-webkit-scrollbar-thumb:hover { background: var(--secondary-accent); }
+
+        .form-title { text-align: center; font-size: 2rem; margin-bottom: 0.5rem; color: var(--text-light); }
+        .form-subtitle { text-align: center; font-size: 0.9rem; opacity: 0.8; margin-bottom: 2rem; }
+        
+        .options-toggle { display: flex; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 50px; padding: 0.25rem; margin-bottom: 1.5rem; }
+        .option-btn { flex: 1; background: transparent; border: none; color: var(--text-light); opacity: 0.7; padding: 0.5rem; border-radius: 50px; cursor: pointer; font-weight: 500; transition: all 0.3s ease; }
+        .option-btn.active { background: var(--primary-accent); opacity: 1; box-shadow: 0 0 10px var(--primary-accent); }
+
+        .input-group { display: flex; align-items: center; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 12px; margin-bottom: 1rem; padding: 0 1rem; transition: all 0.3s ease; }
+        .input-group:focus-within { box-shadow: 0 0 15px var(--secondary-accent); border-color: var(--secondary-accent); }
+        .input-group i { color: var(--text-light); opacity: 0.5; margin-right: 0.75rem; }
+        .input-group input { width: 100%; background: none; border: none; outline: none; padding: 1rem 0; color: var(--text-light); font-size: 1rem; font-family: 'Poppins', sans-serif; }
+        .input-group input::placeholder { color: var(--text-light); opacity: 0.6; }
+        
+        .submit-btn { display: flex; width: 100%; align-items: center; justify-content: center; padding: 1rem; margin-top: 1.5rem; border-radius: 12px; background: var(--accent-gradient); border: none; color: var(--text-light); font-weight: 600; font-size: 1.1rem; font-family: 'Poppins', sans-serif; transition: all 0.4s ease; cursor: pointer; }
+        .submit-btn:hover { box-shadow: 0 0 20px var(--primary-accent), 0 0 30px var(--secondary-accent); transform: translateY(-3px) scale(1.02); }
+        .hidden { display: none; }
+
+        @media (max-width: 540px) { .auth-container { padding: 2rem 1.5rem; } .form-title { font-size: 1.8rem; } .form-content { padding-right: 8px; margin-right: -8px; } }
+    </style>
+</head>
+
+<body>
+    <div id="particles-js"></div>
+    <div class="auth-container">
+        
+        <div class="auth-tabs">
+            <button class="tab-link" data-slide="0">Login</button>
+            <button class="tab-link active" data-slide="1">Sign Up</button>
+        </div>
+
+        <div class="swiper auth-swiper">
+            <div class="swiper-wrapper">
+                <!-- Login Slide -->
+                <div class="swiper-slide" id="login-slide">
+                    <div class="form-content">
+                        <h2 class="form-title">Welcome Back</h2>
+                        <p class="form-subtitle">Login to continue your journey</p>
+    
+                        <div class="options-toggle login-options">
+                            <button class="option-btn active" data-form="user">User</button>
+                            <button class="option-btn" data-form="business">Business</button>
+                            <button class="option-btn" data-form="employee">Employee</button>
+                        </div>
+    
+                        <form id="user-login-form" action="user.html">
+                            <div class="input-group"><i class="fas fa-phone"></i><input type="tel" placeholder="Phone Number" value="+971 50 123 4567"></div>
+                            <div class="input-group"><i class="fas fa-lock"></i><input type="password" placeholder="Password" value="demopassword"></div>
+                            <button type="submit" class="submit-btn">Login</button>
+                        </form>
+
+                        <form id="business-login-form" class="hidden" action="business.html">
+                            <div class="input-group"><i class="fas fa-envelope"></i><input type="email" placeholder="Business Email" value="demo.cafe@example.com"></div>
+                            <div class="input-group"><i class="fas fa-lock"></i><input type="password" placeholder="Password" value="businesspassword"></div>
+                            <button type="submit" class="submit-btn">Login as Business</button>
+                        </form>
+    
+                        <form id="employee-login-form" class="hidden" action="admin.html">
+                            <div class="input-group"><i class="fas fa-user-tie"></i><input type="text" placeholder="Employee ID" value="EMP-2024-007"></div>
+                            <div class="input-group"><i class="fas fa-lock"></i><input type="password" placeholder="Password" value="adminpassword"></div>
+                            <button type="submit" class="submit-btn">Login as Employee</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Sign Up Slide -->
+                <div class="swiper-slide" id="signup-slide">
+                    <div class="form-content">
+                        <h2 class="form-title">Join Ne'matuk</h2>
+                        <p class="form-subtitle">Start your journey with us today</p>
+                        
+                        <div class="options-toggle signup-options">
+                            <button class="option-btn active" data-form="user-signup">Join as a User</button>
+                            <button class="option-btn" data-form="business-signup">Join as a Business</button>
+                        </div>
+    
+                        <form id="user-signup-form" action="user.html">
+                            <div class="input-group"><i class="fas fa-user"></i><input type="text" placeholder="Full Name" value="Ahmed Al Falahi"></div>
+                            <div class="input-group"><i class="fas fa-envelope"></i><input type="email" placeholder="Email Address" value="demo.user@example.com"></div>
+                            <div class="input-group"><i class="fas fa-phone"></i><input type="tel" placeholder="Phone Number" value="+971 55 987 6543"></div>
+                            <div class="input-group"><i class="fas fa-id-card"></i><input type="text" placeholder="Emirates ID" value="784-1990-1234567-1"></div>
+                            <div class="input-group"><i class="fas fa-lock"></i><input type="password" placeholder="Create Password" value="newuser123"></div>
+                            <button type="submit" class="submit-btn">Create User Account</button>
+                        </form>
+
+                        <form id="business-signup-form" class="hidden" action="business.html">
+                            <div class="input-group"><i class="fas fa-store"></i><input type="text" placeholder="Business Name" value="Artisan Bakes Cafe"></div>
+                            <div class="input-group"><i class="fas fa-file-alt"></i><input type="text" placeholder="Trade License #" value="CN-1234567"></div>
+                            <div class="input-group"><i class="fas fa-envelope"></i><input type="email" placeholder="Business Email" value="contact@artisanbakes.ae"></div>
+                            <div class="input-group"><i class="fas fa-lock"></i><input type="password" placeholder="Create Password" value="business123"></div>
+                            <button type="submit" class="submit-btn">Register Business</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            particlesJS("particles-js", { "particles": { "number": { "value": 8, "density": { "enable": true, "value_area": 800 } }, "color": { "value": ["#A450E4", "#49E7CD"] }, "shape": { "type": "circle" }, "opacity": { "value": 0.2, "random": true }, "size": { "value": 150, "random": true, "anim": { "enable": true, "speed": 1.5, "size_min": 50, "sync": false } }, "line_linked": { "enable": false }, "move": { "enable": true, "speed": 1.5, "direction": "none", "random": true, "straight": false, "out_mode": "out", "bounce": false } }, "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": false }, "onclick": { "enable": false }, "resize": true } }, "retina_detect": true });
+        
+            const authSwiper = new Swiper('.auth-swiper', {
+                effect: 'fade',
+                allowTouchMove: false,
+                initialSlide: 1, // Start on Sign Up page
+                speed: 500,
+                fadeEffect: { crossFade: true }
+            });
+
+            const tabs = document.querySelectorAll('.tab-link');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const slideIndex = parseInt(tab.dataset.slide, 10);
+                    authSwiper.slideTo(slideIndex);
+                });
+            });
+
+            // --- Login Form Logic ---
+            const loginOptionBtns = document.querySelectorAll('.login-options .option-btn');
+            const userLoginForm = document.getElementById('user-login-form');
+            const businessLoginForm = document.getElementById('business-login-form');
+            const employeeLoginForm = document.getElementById('employee-login-form');
+
+            loginOptionBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    loginOptionBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    userLoginForm.classList.add('hidden');
+                    businessLoginForm.classList.add('hidden');
+                    employeeLoginForm.classList.add('hidden');
+
+                    if (btn.dataset.form === 'user') userLoginForm.classList.remove('hidden');
+                    else if (btn.dataset.form === 'business') businessLoginForm.classList.remove('hidden');
+                    else if (btn.dataset.form === 'employee') employeeLoginForm.classList.remove('hidden');
+                });
+            });
+
+            // --- Sign Up Form Logic ---
+            const signupOptionBtns = document.querySelectorAll('.signup-options .option-btn');
+            const userSignupForm = document.getElementById('user-signup-form');
+            const businessSignupForm = document.getElementById('business-signup-form');
+
+            signupOptionBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    signupOptionBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    if (btn.dataset.form === 'user-signup') {
+                        userSignupForm.classList.remove('hidden');
+                        businessSignupForm.classList.add('hidden');
+                    } else {
+                        userSignupForm.classList.add('hidden');
+                        businessSignupForm.classList.remove('hidden');
+                    }
+                });
+            });
+
+            // --- Reset Logic on Tab Change ---
+            authSwiper.on('slideChange', function () {
+                // Reset Login form to default state
+                if (authSwiper.activeIndex === 0) {
+                    loginOptionBtns.forEach(btn => btn.classList.remove('active'));
+                    document.querySelector('.login-options .option-btn[data-form="user"]').classList.add('active');
+                    userLoginForm.classList.remove('hidden');
+                    businessLoginForm.classList.add('hidden');
+                    employeeLoginForm.classList.add('hidden');
+                }
+                // Reset Sign Up form to default state
+                if (authSwiper.activeIndex === 1) {
+                    signupOptionBtns.forEach(btn => btn.classList.remove('active'));
+                    document.querySelector('.signup-options .option-btn[data-form="user-signup"]').classList.add('active');
+                    userSignupForm.classList.remove('hidden');
+                    businessSignupForm.classList.add('hidden');
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

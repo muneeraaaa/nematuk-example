@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Dashboard | Ne'matuk</title>
+    <link rel="shortcut icon" href="./img/logo_transparent.png" type="image/x-icon">
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #1A1D2E;
+            --primary-accent: #A450E4;
+            --secondary-accent: #49E7CD;
+            --text-light: #F0F4F8;
+            --glass-bg: rgba(26, 29, 46, 0.6);
+            --glass-border: rgba(240, 244, 248, 0.2);
+            --accent-gradient: linear-gradient(90deg, var(--primary-accent) 0%, var(--secondary-accent) 100%);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-dark); color: var(--text-light); overflow-x: hidden; }
+        #particles-js { position: fixed; width: 100vw; height: 100vh; top: 0; left: 0; z-index: -1; }
+        .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 2rem 2rem 8rem 2rem; }
+        body::-webkit-scrollbar { width: 8px; }
+        body::-webkit-scrollbar-track { background: var(--bg-dark); }
+        body::-webkit-scrollbar-thumb { background: var(--accent-gradient); border-radius: 4px; }
+
+        header { display: flex; align-items: center; margin-bottom: 2rem; }
+        .header-icon { font-size: 2.5rem; margin-right: 1.5rem; color: var(--secondary-accent); }
+        .header-title h1 { font-size: 2.5rem; font-weight: 600; }
+        .header-title p { font-size: 1.1rem; opacity: 0.8; }
+
+        .section-title { font-size: 1.5rem; font-weight: 500; margin-bottom: 1.5rem; opacity: 0.9; text-align: left;}
+        .glass-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 1.5rem; transition: all 0.3s ease; }
+        
+        .page-section.hidden { display: none; }
+        .page-section.active { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .action-bar { display: flex; justify-content: center; align-items: center; width: 100%; padding: 1rem; margin-bottom: 2rem; background: var(--accent-gradient); border-radius: 12px; color: var(--text-light); text-decoration: none; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease; }
+        .action-bar:hover { box-shadow: 0 0 15px var(--secondary-accent); transform: translateY(-3px); }
+        .action-bar i { margin-right: 0.75rem; }
+
+        .surplus-list { display: flex; flex-direction: column; gap: 1rem; }
+        .surplus-item { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; }
+        .item-details h3 { font-size: 1.2rem; margin-bottom: 0.25rem; }
+        .item-details p { font-size: 0.9rem; opacity: 0.7; margin: 0; }
+        .item-status { text-align: right; }
+        .status-tag { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .status-available { background-color: rgba(73, 231, 205, 0.2); color: var(--secondary-accent); }
+        .status-reserved { background-color: rgba(245, 166, 35, 0.2); color: #F5A623; }
+        .status-collected { background-color: rgba(240, 244, 248, 0.2); color: #aab8c5; }
+        .time-left { font-size: 0.9rem; opacity: 0.8; }
+        .time-left i { margin-right: 0.3rem; }
+
+        .request-item .user-info { display: flex; align-items: center; gap: 1rem; }
+        .request-item .user-info i { font-size: 2rem; }
+        .request-item .actions { display: flex; gap: 0.5rem; }
+        .action-btn { background: var(--accent-gradient); border: none; color: var(--text-light); font-weight: 600; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .action-btn.decline { background: rgba(220, 53, 69, 0.3); }
+        .action-btn:hover { box-shadow: 0 0 15px var(--secondary-accent); transform: translateY(-2px); }
+        .action-btn.decline:hover { box-shadow: 0 0 15px #dc3545; }
+
+        .impact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem; }
+        .chart-container { height: 350px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; }
+        .stat-card { text-align: center; padding: 2rem 1.5rem;}
+        .stat-card i { font-size: 2rem; margin-bottom: 1rem;}
+        .stat-card .value { font-size: 2.2rem; font-weight: 700; color: var(--secondary-accent); }
+        .stat-card .label { font-size: 0.9rem; opacity: 0.8; }
+
+        /* Messages Section */
+        .message-item { display: flex; align-items: center; gap: 1.5rem; cursor: pointer; transition: background 0.3s ease; }
+        .message-item:hover { background: rgba(240, 244, 248, 0.05); }
+        .message-avatar { font-size: 2rem; }
+        .message-content { flex-grow: 1; text-align: left; }
+        .message-content h3 { font-size: 1.1rem; }
+        .message-content p { font-size: 0.9rem; opacity: 0.6; margin: 0; }
+        .message-meta { text-align: right; }
+        .message-meta .time { font-size: 0.8rem; opacity: 0.6; margin-bottom: 0.5rem; }
+        .unread-dot { width: 10px; height: 10px; background: var(--secondary-accent); border-radius: 50%; box-shadow: 0 0 8px var(--secondary-accent); margin: 0 auto; }
+        
+        /* Compost Section */
+        .batch-list { display: flex; flex-direction: column; gap: 2rem; padding: 1rem; }
+        .batch-item { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .batch-details { flex-basis: 100%; margin-bottom: 0.5rem; }
+        .progress-bar-container { flex-basis: 100%; height: 10px; background: rgba(0,0,0,0.3); border-radius: 5px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--accent-gradient); border-radius: 5px; width: 0; animation: fill-bar 1.5s ease-out forwards; }
+        @keyframes fill-bar { from { width: 0; } }
+        .progress-label { flex-basis: 100%; text-align: left; font-size: 0.8rem; opacity: 0.7; margin-top: 0.5rem; }
+        .batch-status { font-size: 0.9rem; opacity: 0.8; }
+
+        .profile-options { display: flex; flex-direction: column; gap: 1rem; }
+        .profile-option { display: flex; align-items: center; padding: 1.2rem 1.5rem; text-decoration: none; color: var(--text-light); transition: all 0.3s ease; }
+        .profile-option:hover { background: rgba(240, 244, 248, 0.1); transform: translateX(5px); }
+        .profile-option i { font-size: 1.2rem; width: 40px; opacity: 0.8; }
+        .profile-option span { flex: 1; font-weight: 500; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background: rgba(26, 29, 46, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-top: 1px solid var(--glass-border); padding: 0.5rem 0; z-index: 100; }
+        .nav-items { display: flex; justify-content: space-around; list-style: none; margin: 0; padding: 0; }
+        .nav-item a { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-light); opacity: 0.7; padding: 0.5rem; transition: all 0.3s ease; }
+        .nav-item a i { font-size: 1.5rem; margin-bottom: 0.25rem; }
+        .nav-item a span { font-size: 0.7rem; }
+        .nav-item.active a { opacity: 1; color: var(--secondary-accent); transform: translateY(-5px); }
+        .nav-item.active a i { text-shadow: 0 0 10px var(--secondary-accent); }
+
+        @media (max-width: 768px) {
+            .impact-grid, .stats-grid { grid-template-columns: 1fr; }
+            .surplus-item { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .item-status { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="dashboard-container">
+        <header>
+            <div class="header-icon"><i class="fas fa-store"></i></div>
+            <div class="header-title">
+                <h1 id="header-main-title">Surplus Management</h1>
+                <p id="header-subtitle">Manage your available food items for Artisan Bakes Cafe</p>
+            </div>
+        </header>
+        <main>
+            <!-- SURPLUS SECTION -->
+            <section id="surplus-section" class="page-section active">
+                <a href="#" class="action-bar"><i class="fas fa-plus-circle"></i> Add New Surplus Item</a>
+                <h2 class="section-title">Current Surplus</h2>
+                <div class="surplus-list">
+                    <div class="glass-card surplus-item"><div class="item-details"><h3>Fresh Bread</h3><p>Bakery | Quantity: 15 loaves</p></div><div class="item-status"><span class="status-tag status-available">Available</span><p class="time-left"><i class="far fa-clock"></i> 2 hours left</p></div></div>
+                    <div class="glass-card surplus-item"><div class="item-details"><h3>Grilled Chicken</h3><p>Main Course | Quantity: 8 portions</p></div><div class="item-status"><span class="status-tag status-reserved">Reserved</span><p class="time-left"><i class="far fa-clock"></i> 4 hours left</p></div></div>
+                    <div class="glass-card surplus-item"><div class="item-details"><h3>Mixed Salad</h3><p>Sides | Quantity: 12 bowls</p></div><div class="item-status"><span class="status-tag status-available">Available</span><p class="time-left"><i class="far fa-clock"></i> 6 hours left</p></div></div>
+                    <div class="glass-card surplus-item"><div class="item-details"><h3>Cheesecake Slices</h3><p>Dessert | Quantity: 5 slices</p></div><div class="item-status"><span class="status-tag status-collected">Collected</span><p class="time-left"><i class="far fa-check-circle"></i> Today</p></div></div>
+                </div>
+            </section>
+
+            <!-- REQUESTS SECTION -->
+            <section id="requests-section" class="page-section hidden">
+                <h2 class="section-title">Incoming Requests</h2>
+                <div class="surplus-list">
+                    <div class="glass-card surplus-item request-item"><div class="user-info"><i class="fas fa-user-circle"></i><div><h3>Ahmed A.</h3><p>Requesting: Grilled Chicken</p></div></div><div class="actions"><button class="action-btn">Accept</button><button class="action-btn decline">Decline</button></div></div>
+                    <div class="glass-card surplus-item request-item"><div class="user-info"><i class="fas fa-user-circle"></i><div><h3>Fatima K.</h3><p>Requesting: Fresh Bread</p></div></div><div class="actions"><button class="action-btn">Accept</button><button class="action-btn decline">Decline</button></div></div>
+                </div>
+            </section>
+
+            <!-- IMPACT SECTION -->
+            <section id="impact-section" class="page-section hidden">
+                <h2 class="section-title">Your Business Impact</h2>
+                <div class="stats-grid" style="margin-bottom: 3rem;">
+                    <div class="glass-card stat-card"><div class="value">2,450</div><div class="label">Total Revenue (AED)</div></div>
+                    <div class="glass-card stat-card"><div class="value">312</div><div class="label">Total Items Listed</div></div>
+                    <div class="glass-card stat-card"><div class="value">298</div><div class="label">Meals Rescued</div></div>
+                    <div class="glass-card stat-card"><div class="value">4.8 <i class="fas fa-star" style="font-size: 1rem;"></i></div><div class="label">Average Rating</div></div>
+                </div>
+                <div class="impact-grid">
+                    <div class="glass-card"><h3 style="margin-bottom: 1rem;">Revenue This Week (AED)</h3><div class="chart-container"><canvas id="revenueChart"></canvas></div></div>
+                    <div class="glass-card"><h3 style="margin-bottom: 1rem;">Surplus Breakdown</h3><div class="chart-container"><canvas id="impactDoughnut"></canvas></div></div>
+                </div>
+            </section>
+
+            <!-- MESSAGES SECTION -->
+            <section id="messages-section" class="page-section hidden">
+                <h2 class="section-title">Messages</h2>
+                <div class="surplus-list">
+                    <div class="glass-card message-item"><div class="message-avatar"><i class="fas fa-user-circle"></i></div><div class="message-content"><h3>Ahmed A.</h3><p>Hi, I just reserved the grilled chicken. Is it...</p></div><div class="message-meta"><div class="time">5m ago</div><div class="unread-dot"></div></div></div>
+                    <div class="glass-card message-item"><div class="message-avatar"><i class="fas fa-building"></i></div><div class="message-content"><h3>Ne'matuk Support</h3><p>Welcome to the platform! Here are some tips...</p></div><div class="message-meta"><div class="time">Yesterday</div></div></div>
+                    <div class="glass-card message-item"><div class="message-avatar"><i class="fas fa-user-circle"></i></div><div class="message-content"><h3>Sara M.</h3><p>Thank you for the amazing pastries! Will...</p></div><div class="message-meta"><div class="time">2 days ago</div></div></div>
+                </div>
+            </section>
+
+            <!-- COMPOST SECTION -->
+            <section id="compost-section" class="page-section hidden">
+                 <div class="stats-grid">
+                    <div class="glass-card stat-card"><i class="fas fa-leaf"></i><div class="value">45kg</div><div class="label">Composted This Month</div></div>
+                    <div class="glass-card stat-card"><i class="fas fa-bullseye"></i><div class="value">78%</div><div class="label">Waste Diverted</div></div>
+                </div>
+                <h2 class="section-title">Active Compost Batches</h2>
+                <div class="glass-card">
+                    <div class="batch-list">
+                        <div class="batch-item">
+                            <div class="batch-details"><h3>Batch A</h3><p>Started 2 weeks ago</p></div>
+                            <div class="batch-status">Decomposing</div>
+                            <div class="progress-bar-container"><div class="progress-bar" style="width: 75%;"></div></div>
+                            <div class="progress-label">75% complete</div>
+                        </div>
+                        <div class="batch-item">
+                            <div class="batch-details"><h3>Batch B</h3><p>Started 1 week ago</p></div>
+                            <div class="batch-status">Active</div>
+                            <div class="progress-bar-container"><div class="progress-bar" style="width: 45%;"></div></div>
+                            <div class="progress-label">45% complete</div>
+                        </div>
+                        <div class="batch-item">
+                            <div class="batch-details"><h3>Batch C</h3><p>Started 3 days ago</p></div>
+                            <div class="batch-status">Starting</div>
+                            <div class="progress-bar-container"><div class="progress-bar" style="width: 15%;"></div></div>
+                            <div class="progress-label">15% complete</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PROFILE SECTION -->
+            <section id="profile-section" class="page-section hidden">
+                <h2 class="section-title">Business Profile</h2>
+                <div class="profile-options">
+                    <a href="#" class="glass-card profile-option"><i class="fas fa-store"></i><span>Store Settings</span><i class="fas fa-chevron-right"></i></a>
+                    <a href="#" class="glass-card profile-option"><i class="fas fa-file-invoice-dollar"></i><span>Billing & Payouts</span><i class="fas fa-chevron-right"></i></a>
+                    <a href="#" class="glass-card profile-option"><i class="fas fa-users"></i><span>Manage Staff</span><i class="fas fa-chevron-right"></i></a>
+                    <a href="#" class="glass-card profile-option"><i class="fas fa-question-circle"></i><span>Help & Support</span><i class="fas fa-chevron-right"></i></a>
+                    <a href="auth.html" class="glass-card profile-option" style="color: #ff4d60;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <nav class="bottom-nav">
+        <ul class="nav-items">
+            <li class="nav-item active"><a href="#" data-target="surplus-section"><i class="fas fa-box-open"></i><span>Surplus</span></a></li>
+            <li class="nav-item"><a href="#" data-target="requests-section"><i class="fas fa-receipt"></i><span>Requests</span></a></li>
+            <li class="nav-item"><a href="#" data-target="impact-section"><i class="fas fa-chart-pie"></i><span>Impact</span></a></li>
+            <li class="nav-item"><a href="#" data-target="messages-section"><i class="fas fa-comments"></i><span>Messages</span></a></li>
+            <li class="nav-item"><a href="#" data-target="compost-section"><i class="fas fa-recycle"></i><span>Compost</span></a></li>
+            <li class="nav-item"><a href="#" data-target="profile-section"><i class="fas fa-user-cog"></i><span>Profile</span></a></li>
+        </ul>
+    </nav>
+    
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            particlesJS("particles-js", { "particles": { "number": { "value": 8, "density": { "enable": true, "value_area": 800 } }, "color": { "value": ["#A450E4", "#49E7CD"] }, "shape": { "type": "circle" }, "opacity": { "value": 0.2, "random": true }, "size": { "value": 150, "random": true, "anim": { "enable": true, "speed": 1.5, "size_min": 50, "sync": false } }, "line_linked": { "enable": false }, "move": { "enable": true, "speed": 1.5, "direction": "none", "random": true, "straight": false, "out_mode": "out", "bounce": false } }, "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": false }, "onclick": { "enable": false }, "resize": true } }, "retina_detect": true });
+
+            const navItems = document.querySelectorAll('.nav-item');
+            const pageSections = document.querySelectorAll('.page-section');
+            const headerMainTitle = document.getElementById('header-main-title');
+            const headerSubtitle = document.getElementById('header-subtitle');
+            const headerIcon = document.querySelector('.header-icon i');
+
+            // Store original header content
+            const originalHeader = {
+                title: headerMainTitle.textContent,
+                subtitle: headerSubtitle.textContent,
+                iconClass: headerIcon.className
+            };
+
+            const pageHeaders = {
+                'surplus-section': { title: 'Surplus Management', subtitle: 'Manage your available food items for Artisan Bakes Cafe', icon: 'fas fa-store' },
+                'requests-section': { title: 'Requests', subtitle: '', icon: 'fas fa-receipt' },
+                'impact-section': { title: 'Business Impact', subtitle: '', icon: 'fas fa-chart-pie' },
+                'messages-section': { title: 'Messages', subtitle: '', icon: 'fas fa-comments' },
+                'compost-section': { title: 'Compost Management', subtitle: '', icon: 'fas fa-recycle' },
+                'profile-section': { title: 'Business Profile', subtitle: '', icon: 'fas fa-user-cog' },
+            };
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.querySelector('a').dataset.target;
+                    const headerInfo = pageHeaders[targetId];
+
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    pageSections.forEach(section => {
+                        section.classList.toggle('hidden', section.id !== targetId);
+                        section.classList.toggle('active', section.id === targetId);
+                    });
+                    
+                    headerMainTitle.textContent = headerInfo.title;
+                    headerIcon.className = headerInfo.icon;
+                    if (headerInfo.subtitle) {
+                        headerSubtitle.textContent = headerInfo.subtitle;
+                        headerSubtitle.style.display = 'block';
+                    } else {
+                        headerSubtitle.style.display = 'none';
+                    }
+
+                    window.scrollTo(0, 0);
+                });
+            });
+
+            // Chart.js implementation
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, { type: 'bar', data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ label: 'Revenue', data: [120, 190, 150, 250, 220, 300, 280], backgroundColor: 'rgba(73, 231, 205, 0.7)', borderColor: 'rgba(73, 231, 205, 1)', borderWidth: 1, borderRadius: 5 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: 'rgba(240, 244, 248, 0.1)' }, ticks: { color: '#F0F4F8' } }, x: { grid: { display: false }, ticks: { color: '#F0F4F8' } } }, plugins: { legend: { display: false } } } });
+            const doughnutCtx = document.getElementById('impactDoughnut').getContext('2d');
+            new Chart(doughnutCtx, { type: 'doughnut', data: { labels: ['Rescued', 'Donated', 'Composted'], datasets: [{ data: [298, 45, 12], backgroundColor: ['#49E7CD', '#A450E4', '#F5A623'], borderColor: '#1A1D2E', borderWidth: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#F0F4F8' } } } } });
+        });
+    </script>
+</body>
+</html>

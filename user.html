@@ -1,0 +1,4472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | Ne'matuk</title>
+    <link rel="shortcut icon" href="./img/logo_transparent.png" type="image/x-icon">
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #1A1D2E;
+            --primary-accent: #A450E4;
+            --secondary-accent: #49E7CD;
+            --text-light: #F0F4F8;
+            --glass-bg: rgba(26, 29, 46, 0.6);
+            --glass-border: rgba(240, 244, 248, 0.2);
+            --accent-gradient: linear-gradient(90deg, var(--primary-accent) 0%, var(--secondary-accent) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 2rem 8rem 2rem;
+            /* Bottom padding for nav bar */
+        }
+
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background: var(--accent-gradient);
+            border-radius: 4px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-message h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        .welcome-message p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid var(--secondary-accent);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+            text-align: left;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .page-section.hidden {
+            display: none;
+        }
+
+        .page-section.active {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Home: Stats Slider */
+        .stats-slider-container {
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-slider {
+            display: flex;
+            transition: transform 0.3s ease;
+            width: 400%;
+            /* 4 cards × 100% each */
+        }
+
+        .stats-slider .stat-card {
+            min-width: calc(100% / 4);
+            /* Each card takes 1/4 of slider width */
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .stats-slider .stat-card i {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .stats-slider .stat-card .value {
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .stats-slider .stat-card .label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .stats-slider .stat-card .fa-chart-line {
+            color: #50E3C2;
+        }
+
+        .stats-slider .stat-card .fa-utensils {
+            color: #4A90E2;
+        }
+
+        .stats-slider .stat-card .fa-star {
+            color: #F5A623;
+        }
+
+        .stats-slider .stat-card .fa-leaf {
+            color: #B8E986;
+        }
+
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(240, 244, 248, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: var(--secondary-accent);
+            transform: scale(1.2);
+        }
+
+        /* Home: Chart Section */
+        .chart-container {
+            height: 350px;
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        /* Home: Map Section */
+        .map-container {
+            position: relative;
+            height: 250px;
+            margin-bottom: 3rem;
+            overflow: hidden;
+            border-radius: 20px;
+        }
+
+        .map-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(26, 29, 46, 0.8);
+            color: var(--text-light);
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .map-overlay i {
+            color: var(--secondary-accent);
+        }
+
+        /* Home: Available Food Section */
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Home: News Section */
+        .news-slider-container {
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .news-slider {
+            display: flex;
+            transition: transform 0.3s ease;
+            width: 400%;
+            /* 4 cards × 100% each */
+        }
+
+        .news-slider .news-card {
+            min-width: calc(100% / 4);
+            /* Each card takes 1/4 of slider width */
+            flex-shrink: 0;
+            padding: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin: 0 1rem;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(73, 231, 205, 0.2);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .news-content {
+            padding: 1.5rem;
+        }
+
+        .news-content h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0 0 0.75rem 0;
+            color: var(--text-light);
+            line-height: 1.3;
+        }
+
+        .news-brief {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin: 0 0 1rem 0;
+            line-height: 1.4;
+        }
+
+        .impact-section {
+            background: rgba(73, 231, 205, 0.1);
+            border: 1px solid rgba(73, 231, 205, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .impact-section h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+            color: var(--secondary-accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .impact-section h4::before {
+            content: "💡";
+            font-size: 1rem;
+        }
+
+        .impact-section p {
+            font-size: 0.85rem;
+            margin: 0;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .news-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary-accent);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .news-link::after {
+            content: "→";
+            transition: transform 0.3s ease;
+        }
+
+        .news-link:hover {
+            color: var(--primary-accent);
+            transform: translateX(3px);
+        }
+
+        .news-link:hover::after {
+            transform: translateX(3px);
+        }
+
+        .news-slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .news-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(240, 244, 248, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .news-dot.active {
+            background: var(--secondary-accent);
+            transform: scale(1.2);
+        }
+
+        .food-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .food-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .food-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .food-info h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .food-info p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin: 0;
+        }
+
+        .food-action .price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--secondary-accent);
+        }
+
+        .action-btn {
+            background: var(--accent-gradient);
+            border: none;
+            color: var(--text-light);
+            font-weight: 600;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .action-btn:hover {
+            box-shadow: 0 0 15px var(--secondary-accent);
+            transform: translateY(-2px);
+        }
+
+        /* Explore Section */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-bar i {
+            font-size: 1.2rem;
+            opacity: 0.6;
+        }
+
+        .search-bar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .explore-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .business-card {
+            text-align: center;
+        }
+
+        .business-card img {
+            width: 100%;
+            height: 150px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        /* Explore Section */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-bar i {
+            font-size: 1.2rem;
+            opacity: 0.6;
+        }
+
+        .search-bar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding: 0.5rem 0;
+        }
+
+        /*better reward styling*/
+        .reward-cost {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary-accent);
+            margin-top: 0.25rem;
+        }
+
+        .filter-btn {
+            background: rgba(240, 244, 248, 0.1);
+            border: 1px solid rgba(240, 244, 248, 0.2);
+            color: var(--text-light);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover {
+            background: rgba(240, 244, 248, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-gradient);
+            border: 1px solid var(--secondary-accent);
+            box-shadow: 0 0 15px rgba(73, 231, 205, 0.3);
+        }
+
+        .explore-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .business-card {
+            text-align: center;
+        }
+
+        .business-card img {
+            width: 100%;
+            height: 150px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        /* AI Recipes & Groceries Section */
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .item-card {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-card img {
+            width: 100%;
+            height: 150px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .item-card .item-info {
+            flex-grow: 1;
+        }
+
+        .item-card .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        /* Rewards Section */
+        .points-balance {
+            text-align: center;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .points-balance .label {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .points-balance .value {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--secondary-accent);
+            line-height: 1;
+        }
+
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .reward-card {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .reward-card i {
+            font-size: 2.5rem;
+            color: var(--primary-accent);
+        }
+
+        /* Profile Section */
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-header .profile-avatar {
+            width: 100px;
+            height: 100px;
+            font-size: 3rem;
+            margin: 0 auto 1rem auto;
+        }
+
+        .profile-header h2 {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .profile-header p {
+            margin: 0;
+            opacity: 0.7;
+        }
+
+        .profile-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .profile-option {
+            display: flex;
+            align-items: center;
+            padding: 1.2rem 1.5rem;
+            text-decoration: none;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .profile-option:hover {
+            background: rgba(240, 244, 248, 0.1);
+            transform: translateX(5px);
+        }
+
+        .profile-option i {
+            font-size: 1.2rem;
+            width: 40px;
+            opacity: 0.8;
+        }
+
+        .profile-option span {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.5);
+        }
+
+        .logout-btn:hover {
+            background: rgba(220, 53, 69, 0.4);
+            color: #ff4d60;
+            transform: translateX(0);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: rgba(26, 29, 46, 0.9);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-top: 1px solid var(--glass-border);
+            padding: 0.5rem 0;
+            z-index: 1000;
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-item {
+            flex: 1;
+        }
+
+        .nav-item a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-light);
+            opacity: 0.7;
+            padding: 0.75rem 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            z-index: 1001;
+        }
+
+        .nav-item a i {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item a span {
+            font-size: 0.7rem;
+        }
+
+        .nav-item.active a {
+            opacity: 1;
+            color: var(--secondary-accent);
+            transform: translateY(-5px);
+        }
+
+        .nav-item.active a i {
+            text-shadow: 0 0 10px var(--secondary-accent);
+        }
+
+        /* Community Awareness Styles */
+        .social-post {
+            margin-bottom: 2rem;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .post-info h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .post-info p {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin: 0;
+        }
+
+        .government-badge {
+            background: var(--accent-gradient);
+        }
+
+        .challenge-badge {
+            background: linear-gradient(135deg, #F5A623, #FFD700);
+        }
+
+        .creator-avatar {
+            background: url('https://images.unsplash.com/photo-1494790108755-2616b332e234?w=50&h=50&fit=crop&crop=face') center/cover;
+            border: 2px solid var(--secondary-accent);
+        }
+
+        .verified {
+            color: var(--secondary-accent);
+            font-size: 0.8rem;
+        }
+
+        .creator-tag {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .post-content {
+            margin-bottom: 1rem;
+        }
+
+        .post-content p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .campaign-banner {
+            position: relative;
+            height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .campaign-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .banner-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(26, 29, 46, 0.9));
+            padding: 2rem 1.5rem 1rem;
+            color: white;
+        }
+
+        .banner-overlay h4 {
+            font-size: 1.4rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 700;
+        }
+
+        .banner-overlay span {
+            opacity: 0.9;
+        }
+
+        .hashtags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .hashtags span {
+            background: rgba(73, 231, 205, 0.2);
+            color: var(--secondary-accent);
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(73, 231, 205, 0.3);
+        }
+
+        .challenge-card .post-content {
+            padding-bottom: 0;
+        }
+
+        .challenge-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .challenge-title h4 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .time-left {
+            background: rgba(245, 166, 35, 0.2);
+            color: #F5A623;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .progress-container {
+            margin: 1.5rem 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .progress-text {
+            color: var(--secondary-accent);
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(240, 244, 248, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-gradient);
+            border-radius: 3px;
+        }
+
+        .challenge-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .stat i {
+            color: var(--secondary-accent);
+        }
+
+        .challenge-join {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .video-card {
+            position: relative;
+            height: 180px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .video-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(26, 29, 46, 0.8);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .duration {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(26, 29, 46, 0.9);
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+
+        .achievement-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(73, 231, 205, 0.1);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(73, 231, 205, 0.2);
+            margin: 1rem 0;
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+            color: #F5A623;
+        }
+
+        .achievement-text h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+        }
+
+        .achievement-text p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 1rem;
+        }
+
+        .engagement-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            opacity: 0.8;
+        }
+
+        .engagement-btn:hover {
+            background: rgba(240, 244, 248, 0.1);
+            opacity: 1;
+        }
+
+        .engagement-btn.liked {
+            color: #FF6B6B;
+            opacity: 1;
+        }
+
+        /* Awareness Content Management */
+        .awareness-content {
+            display: none;
+        }
+
+        .awareness-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            opacity: 0.8;
+            font-size: 1rem;
+        }
+
+        .subsection-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+            opacity: 0.9;
+        }
+
+        /* Campaigns Page Styles */
+        .campaign-feature {
+            margin-bottom: 2rem;
+        }
+
+        .campaign-banner.large {
+            height: 250px;
+        }
+
+        .campaigns-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .campaign-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .campaign-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .campaign-info {
+            padding: 1rem;
+            flex-grow: 1;
+        }
+
+        .campaign-info h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .campaign-info p {
+            margin: 0 0 1rem 0;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        .campaign-stats {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .campaign-stats span {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .campaign-card .action-btn {
+            margin: 1rem;
+            margin-top: 0;
+        }
+
+        /* Creators Page Styles */
+        .creators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .creator-profile {
+            padding: 1.5rem;
+        }
+
+        .creator-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .creator-avatar.large {
+            width: 70px;
+            height: 70px;
+        }
+
+        .creator-info {
+            flex-grow: 1;
+        }
+
+        .creator-info h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .creator-info p {
+            margin: 0 0 0.5rem 0;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .creator-stats {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .follow-btn {
+            background: var(--accent-gradient);
+            border: none;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .follow-btn:hover {
+            box-shadow: 0 0 15px rgba(73, 231, 205, 0.4);
+        }
+
+        .follow-btn.following {
+            background: rgba(240, 244, 248, 0.2);
+            color: var(--text-light);
+        }
+
+        .recent-content h5 {
+            margin: 0 0 1rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .content-preview {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .content-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .content-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .content-details {
+            flex-grow: 1;
+        }
+
+        .content-title {
+            display: block;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .content-meta {
+            display: block;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 0.25rem;
+        }
+
+        .podcast-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(240, 244, 248, 0.05);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(240, 244, 248, 0.1);
+            margin: 1rem 0;
+        }
+
+        .podcast-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .podcast-info {
+            flex-grow: 1;
+        }
+
+        .podcast-info h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+        }
+
+        .podcast-info p {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .duration {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .play-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(73, 231, 205, 0.4);
+        }
+
+        /* Challenges Page Styles */
+        .my-challenges {
+            margin-bottom: 2rem;
+        }
+
+        .my-challenges h4 {
+            margin: 0 0 1rem 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .challenge-summary {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-align: left;
+        }
+
+        .summary-item i {
+            font-size: 1.8rem;
+            color: var(--secondary-accent);
+        }
+
+        .summary-item .value {
+            display: block;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--secondary-accent);
+        }
+
+        .summary-item .label {
+            display: block;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .challenges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .challenge-detailed {
+            position: relative;
+            padding: 1.5rem;
+        }
+
+        .challenge-badge {
+            position: absolute;
+            top: -8px;
+            right: 15px;
+            background: var(--accent-gradient);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .active-challenge {
+            border: 2px solid var(--secondary-accent);
+            box-shadow: 0 0 20px rgba(73, 231, 205, 0.2);
+        }
+
+        .challenge-detailed .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .challenge-detailed .challenge-header h4 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .challenge-rewards {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .reward {
+            background: rgba(245, 166, 35, 0.2);
+            color: #F5A623;
+            padding: 0.3rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .challenge-participants {
+            margin: 1rem 0;
+        }
+
+        .participants-avatars {
+            display: flex;
+            align-items: center;
+            gap: -0.5rem;
+        }
+
+        .participant-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            border: 2px solid var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: white;
+        }
+
+        .participants-count {
+            background: rgba(240, 244, 248, 0.2);
+            color: var(--text-light);
+            padding: 0.3rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+        }
+
+        .action-btn.secondary {
+            background: rgba(240, 244, 248, 0.2);
+            color: var(--text-light);
+            border: 1px solid rgba(240, 244, 248, 0.3);
+        }
+
+        .action-btn.secondary:hover {
+            background: rgba(240, 244, 248, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .monthly-challenge {
+            margin-bottom: 2rem;
+        }
+
+        .challenge-feature {
+            padding: 2rem;
+        }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .feature-info {
+            flex-grow: 1;
+        }
+
+        .feature-info h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .feature-info p {
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        .feature-prize {
+            text-align: right;
+        }
+
+        .prize-label {
+            display: block;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .prize-value {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary-accent);
+        }
+
+        .feature-progress {
+            margin-bottom: 2rem;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .progress-stats .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-accent);
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .action-btn.large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            width: 100%;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+
+            .campaigns-grid,
+            .creators-grid,
+            .challenges-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .creator-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .creator-avatar.large {
+                margin-bottom: 1rem;
+            }
+
+            .feature-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .feature-prize {
+                text-align: center;
+            }
+
+            .progress-stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .challenge-summary {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+       /* REPLACE ALL EXISTING NEMATUKGPT CSS WITH THIS COMPLETE REDESIGN */
+
+.nematukgpt-dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.dashboard-header .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.settings-icon {
+    color: var(--text-light);
+    opacity: 0.7;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.settings-icon:hover {
+    opacity: 1;
+}
+
+/* Dashboard Grid Layout */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 2rem;
+    grid-template-areas: 
+        "budget recipe"
+        "pantry pantry";
+}
+
+.budget-shopping-card {
+    grid-area: budget;
+}
+
+.recipe-generator-card {
+    grid-area: recipe;
+}
+
+.pantry-card-full {
+    grid-area: pantry;
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-light);
+}
+
+/* Budget & Shopping Section */
+.budget-section {
+    margin-bottom: 2rem;
+}
+
+.budget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.budget-label {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.budget-amount {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--secondary-accent);
+}
+
+.budget-progress {
+    margin-bottom: 1rem;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(240, 244, 248, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.budget-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+.spent {
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.remaining {
+    color: var(--secondary-accent);
+    font-weight: 500;
+}
+
+/* Shopping List */
+.subsection-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+.shopping-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.shopping-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(240, 244, 248, 0.05);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s ease;
+}
+
+.shopping-item:hover {
+    background: rgba(240, 244, 248, 0.1);
+}
+
+/* Custom Checkbox */
+.item-checkbox {
+    position: relative;
+}
+
+.custom-checkbox {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--glass-border);
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.custom-checkbox:checked {
+    background: var(--accent-gradient);
+    border-color: var(--secondary-accent);
+}
+
+.custom-checkbox:checked::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.item-info {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.item-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.item-price {
+    font-size: 0.85rem;
+    color: var(--secondary-accent);
+    font-weight: 600;
+}
+
+.view-full-list-btn {
+    width: 100%;
+    background: rgba(73, 231, 205, 0.1);
+    border: 1px solid var(--secondary-accent);
+    color: var(--secondary-accent);
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+}
+
+.view-full-list-btn:hover {
+    background: rgba(73, 231, 205, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Shop Nearby Section */
+.nearby-stores {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.store-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(240, 244, 248, 0.05);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s ease;
+}
+
+.store-item:hover {
+    background: rgba(240, 244, 248, 0.1);
+    transform: translateX(3px);
+}
+
+.store-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+}
+
+.store-icon.carrefour {
+    background: linear-gradient(135deg, #0066CC, #0080FF);
+}
+
+.store-icon.spinneys {
+    background: linear-gradient(135deg, #E60012, #FF3333);
+}
+
+.store-icon.lulu {
+    background: linear-gradient(135deg, #FFA500, #FFD700);
+}
+
+.store-info {
+    flex: 1;
+}
+
+.store-name {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.store-distance {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.shop-btn {
+    background: var(--accent-gradient);
+    border: none;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.shop-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(73, 231, 205, 0.3);
+}
+
+/* Recipe Generator Section */
+.recipe-filter {
+    margin-bottom: 1.5rem;
+}
+
+.filter-label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-light);
+    opacity: 0.8;
+}
+
+.ingredient-select {
+    width: 100%;
+    background: rgba(240, 244, 248, 0.1);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    color: var(--text-light);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.ingredient-select:focus {
+    outline: none;
+    border-color: var(--secondary-accent);
+    box-shadow: 0 0 0 2px rgba(73, 231, 205, 0.2);
+}
+
+/* Generated Recipes */
+.generated-recipes {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.recipe-card {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: rgba(240, 244, 248, 0.05);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.recipe-card:hover {
+    background: rgba(240, 244, 248, 0.1);
+    transform: translateY(-2px);
+}
+
+.recipe-image {
+    width: 80px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.recipe-info {
+    flex: 1;
+}
+
+.recipe-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-light);
+}
+
+.recipe-ingredients {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin: 0;
+}
+
+.generate-more-btn {
+    width: 100%;
+    background: var(--accent-gradient);
+    border: none;
+    color: white;
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.generate-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(73, 231, 205, 0.3);
+}
+
+/* Smart Pantry Section */
+.pantry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.scan-receipt-btn {
+    background: var(--accent-gradient);
+    border: none;
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+}
+
+.scan-receipt-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(73, 231, 205, 0.3);
+}
+
+.pantry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.pantry-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(240, 244, 248, 0.05);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s ease;
+}
+
+.pantry-item:hover {
+    transform: translateY(-2px);
+}
+
+.item-icon {
+    font-size: 2rem;
+    width: 50px;
+    text-align: center;
+}
+
+.item-details {
+    flex: 1;
+}
+
+.item-name {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.expiry-info {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.status-indicator {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.status-indicator.fresh {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+}
+
+.status-indicator.warning {
+    background: rgba(255, 152, 0, 0.2);
+    color: #FF9800;
+}
+
+.status-indicator.urgent {
+    background: rgba(244, 67, 54, 0.2);
+    color: #F44336;
+}
+
+.pantry-item.fresh {
+    border-left: 4px solid #4CAF50;
+}
+
+.pantry-item.warning {
+    border-left: 4px solid #FF9800;
+}
+
+.pantry-item.urgent {
+    border-left: 4px solid #F44336;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "budget"
+            "recipe"
+            "pantry";
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        gap: 1.5rem;
+    }
+    
+    .pantry-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .store-item {
+        padding: 0.75rem;
+    }
+    
+    .store-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .recipe-card {
+        padding: 0.5rem;
+    }
+    
+    .recipe-image {
+        width: 60px;
+        height: 45px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .budget-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .budget-details {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .pantry-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .scan-receipt-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Mobile responsive - revert to compact design on smaller screens */
+@media (max-width: 768px) {
+    .nematukgpt-mobile {
+        max-width: 400px;
+    }
+    
+    .nematuk-header {
+        padding: 1rem 1.5rem;
+    }
+    
+    .nematuk-header .section-title {
+        font-size: 1.2rem;
+    }
+    
+    .grocery-scanner-card {
+        padding: 1.5rem;
+    }
+    
+    .scanner-content {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .scanner-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .scanner-text {
+        text-align: center;
+    }
+    
+    .scanner-text h3 {
+        font-size: 1rem;
+    }
+    
+    .scanner-text p {
+        font-size: 0.85rem;
+    }
+    
+    .expiring-grid {
+        display: flex;
+        overflow-x: auto;
+        grid-template-columns: none;
+    }
+    
+    .expiring-item {
+        min-width: 80px;
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .expiring-image {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+    
+    .pantry-stat {
+        flex-direction: column;
+        text-align: center;
+        padding: 0.75rem 0.5rem;
+        gap: 0.5rem;
+    }
+    
+    .stat-icon {
+        font-size: 1.2rem;
+        width: auto;
+        height: auto;
+        background: none;
+        border-radius: 0;
+    }
+}
+.course-feature {
+    margin-bottom: 2rem;
+    padding: 0;
+    overflow: hidden;
+}
+
+.course-banner {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+}
+
+.course-banner .course-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.course-overlay {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+
+.course-badge {
+    background: var(--accent-gradient);
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.course-level {
+    background: rgba(26, 29, 46, 0.9);
+    color: var(--text-light);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    backdrop-filter: blur(10px);
+}
+
+.course-content {
+    padding: 1.5rem;
+}
+
+.course-content h4 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.course-content p {
+    font-size: 1rem;
+    line-height: 1.6;
+    opacity: 0.9;
+    margin-bottom: 1.5rem;
+}
+
+.course-meta {
+    margin-bottom: 1.5rem;
+}
+
+.course-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.course-stats span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+    color: var(--secondary-accent);
+}
+
+.course-stats i {
+    font-size: 0.8rem;
+}
+
+.course-instructor {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.instructor-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid var(--secondary-accent);
+}
+
+.course-enroll {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+/* Course Categories */
+.course-categories {
+    margin-bottom: 2rem;
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.category-card {
+    text-align: center;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(73, 231, 205, 0.2);
+}
+
+.category-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    margin: 0 auto 1rem;
+}
+
+.category-card h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.category-card p {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    margin: 0;
+}
+
+/* Courses Grid */
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.course-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(73, 231, 205, 0.2);
+}
+
+.course-thumbnail {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+}
+
+.course-thumbnail .course-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.course-duration {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(26, 29, 46, 0.9);
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+}
+
+.course-level-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.course-level-badge.beginner {
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+}
+
+.course-level-badge.intermediate {
+    background: rgba(255, 152, 0, 0.9);
+    color: white;
+}
+
+.course-level-badge.advanced {
+    background: rgba(244, 67, 54, 0.9);
+    color: white;
+}
+
+.course-info {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-info h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.course-info p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.8;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+.course-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.course-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.85rem;
+}
+
+.course-rating i {
+    color: #FFC107;
+}
+
+.rating-count {
+    opacity: 0.7;
+}
+
+.course-enrollment {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.course-instructor-mini {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.instructor-mini-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid var(--glass-border);
+}
+
+.course-btn {
+    background: var(--accent-gradient);
+    border: none;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    margin-top: auto;
+}
+
+.course-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(73, 231, 205, 0.3);
+}
+
+/* Learning Paths */
+.learning-paths {
+    margin-bottom: 2rem;
+}
+
+.paths-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.learning-path {
+    padding: 1.5rem;
+}
+
+.path-header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.path-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--accent-gradient);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.path-info {
+    flex: 1;
+}
+
+.path-info h5 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.path-info p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin: 0;
+}
+
+.path-progress {
+    margin-bottom: 1.5rem;
+}
+
+.progress-stats {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-bottom: 1rem;
+}
+
+.path-courses {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.course-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(240, 244, 248, 0.3);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.course-dot.completed {
+    background: var(--secondary-accent);
+    border-color: var(--secondary-accent);
+}
+
+.course-dot.current {
+    background: var(--primary-accent);
+    border-color: var(--primary-accent);
+    box-shadow: 0 0 0 3px rgba(164, 80, 228, 0.3);
+}
+
+.path-continue, .path-start {
+    width: 100%;
+    padding: 1rem 1.5rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .category-card {
+        padding: 1rem;
+    }
+    
+    .category-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+    
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .paths-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .course-stats {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .course-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .course-banner {
+        height: 200px;
+    }
+    
+    .course-content {
+        padding: 1rem;
+    }
+    
+    .path-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .path-courses {
+        justify-content: center;
+    }
+}
+    </style>
+</head>
+
+<body>
+    <div id="particles-js"></div>
+    <div class="dashboard-container">
+
+        <header>
+            <div class="welcome-message">
+                <h1 id="welcome-title">Welcome back, Ahmed!</h1>
+                <p id="welcome-subtitle">Your actions are making a real difference.</p>
+            </div>
+            <div class="profile-avatar">
+                <img src="./img/ahmed-al-falahi.jpeg" alt="Ahmed Al Falahi" />
+            </div>
+        </header>
+
+        <main>
+            <!-- HOME SECTION -->
+            <section id="home-section" class="page-section active">
+                <h2 class="section-title">Your Impact Stats</h2>
+                <div class="stats-slider-container">
+                    <div class="stats-slider">
+                        <div class="glass-card stat-card"><i class="fas fa-chart-line"></i>
+                            <div class="value">23</div>
+                            <div class="label">Total Donations</div>
+                        </div>
+                        <div class="glass-card stat-card"><i class="fas fa-utensils"></i>
+                            <div class="value">156</div>
+                            <div class="label">Meals Saved</div>
+                        </div>
+                        <div class="glass-card stat-card"><i class="fas fa-star"></i>
+                            <div class="value">127</div>
+                            <div class="label">Points Earned</div>
+                        </div>
+                        <div class="glass-card stat-card"><i class="fas fa-leaf"></i>
+                            <div class="value">45kg</div>
+                            <div class="label">CO₂ Saved</div>
+                        </div>
+                    </div>
+                    <div class="slider-dots">
+                        <span class="dot active" data-slide="0"></span>
+                        <span class="dot" data-slide="1"></span>
+                        <span class="dot" data-slide="2"></span>
+                        <span class="dot" data-slide="3"></span>
+                    </div>
+                </div>
+                <!-- Badge Progress Section -->
+                <div class="glass-card" style="margin-bottom: 2rem; padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="position: relative;">
+                            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #2E7D32, #4CAF50); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: white; font-weight: 600;">
+                                🌱
+                            </div>
+                            <div style="position: absolute; top: -5px; right: -5px; background: var(--secondary-accent); color: var(--bg-dark); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700;">
+                                3
+                            </div>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <h3 style="margin: 0; font-size: 1.1rem; font-weight: 600;">Eco Warrior</h3>
+                                <span style="background: linear-gradient(135deg, #2E7D32, #4CAF50); color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.7rem; font-weight: 600;">
+                                    CURRENT BADGE
+                                </span>
+                            </div>
+                            <p style="margin: 0 0 0.75rem 0; font-size: 0.9rem; opacity: 0.8;">
+                                Engage in the awareness tab and earn <span style="color: var(--secondary-accent); font-weight: 600;">54 points</span> left till the next badge!
+                            </p>
+                            <div style="background: rgba(240, 244, 248, 0.2); border-radius: 10px; height: 8px; overflow: hidden; margin-bottom: 0.5rem;">
+                                <div style="width: 67%; height: 100%; background: var(--accent-gradient); border-radius: 10px; transition: width 0.3s ease;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.8rem; opacity: 0.7;">127/180 points</span>
+                                <span style="font-size: 0.8rem; color: var(--secondary-accent); font-weight: 600;">Next: Community Champion 🏆</span>
+                            </div>
+                        </div>
+                        <button class="action-btn" style="padding: 0.6rem 1rem; font-size: 0.9rem;" onclick="switchToAwareness()">
+                            Explore
+                        </button>
+                    </div>
+                </div>
+                <h2 class="section-title">Your Weekly Impact</h2>
+                <div class="glass-card">
+                    <p class="chart-description">Track how many meals you've rescued each day this week. Every meal
+                        saved helps reduce food waste and supports our community!</p>
+                    <div class="chart-container">
+                        <canvas id="impactChart"></canvas>
+                    </div>
+                </div>
+                <h2 class="section-title">Nearby Restaurants</h2>
+                <div class="glass-card map-container">
+                    <img src="./img/dubai-map.png" alt="Dubai Marina Area Map" class="map-image">
+                    <div class="map-overlay">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Dubai Marina Area</span>
+                    </div>
+                </div>
+                <h2 class="section-title">Available Food</h2>
+                <div class="food-grid">
+                    <div class="glass-card food-card"><img
+                            src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNTc5fDB8MXxzZWFyY2h8MXx8cGl6emF8ZW58MHx8fHwxNjY2ODg3NzI4&ixlib=rb-4.0.3&q=80&w=400"
+                            alt="Pizza">
+                        <div class="food-info">
+                            <h3>Pizza Magic Bag</h3>
+                            <p>Artisan Bakes Cafe</p>
+                        </div>
+                        <div class="food-action">
+                            <div class="price">15 AED</div><button class="action-btn">Rescue</button>
+                        </div>
+                    </div>
+                    <div class="glass-card food-card"><img
+                            src="https://images.unsplash.com/photo-1551024601-bec78aea704b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNTc5fDB8MXxzZWFyY2h8NHx8ZGVzc2VydHxlbnwwfHx8fDE2NjY4ODc3NjI&ixlib=rb-4.0.3&q=80&w=400"
+                            alt="Desserts">
+                        <div class="food-info">
+                            <h3>Sweet Treats Bag</h3>
+                            <p>The Cheesecake Factory</p>
+                        </div>
+                        <div class="food-action">
+                            <div class="price">20 AED</div><button class="action-btn">Rescue</button>
+                        </div>
+                    </div>
+                </div>
+
+            <h2 class="section-title">Recent Updates</h2>
+                <div class="news-slider-container">
+                    <div class="news-slider">
+                        <div class="news-card glass-card">
+                            <img src="https://www.dm.gov.ae/wp-content/uploads/2025/02/DM-and-FAO-sign-MoU.jpg.webp" alt="FAO Partnership" class="news-image">
+                            <div class="news-content">
+                                <h3>MoU with FAO: Fortifying Food Safety</h3>
+                                <p class="news-brief">Dubai Municipality partners with UN FAO to strengthen agri-food systems and boost nutrition programs across the UAE.</p>
+                                <div class="impact-section">
+                                    <h4>Impact on You</h4>
+                                    <p>Enhanced food safety standards mean safer meals for your family and more reliable food rescue opportunities through Ne'matuk.</p>
+                                </div>
+                                <a href="https://www.dm.gov.ae/2025/02/12/mou-signed-to-enhance-food-security-and-sustainability-at-the-world-government-summit-2025/" class="news-link">Read More</a>
+                            </div>
+                        </div>
+
+                        <div class="news-card glass-card">
+                            <img src="https://cdn1-m.alittihad.ae/store/archive/image/2024/11/26/d0c4c49c-6117-4a26-8a1a-a00e180939b8.jpg" alt="Food Safety Regulations" class="news-image">
+                            <div class="news-content">
+                                <h3>New Food Safety Regulations 2025</h3>
+                                <p class="news-brief">UAE introduces unified risk-based food safety system with new "Nutri-Mark" labeling launching June 2025.</p>
+                                <div class="impact-section">
+                                    <h4>Impact on You</h4>
+                                    <p>The new Nutri-Mark system (A-E grading) will help you make healthier food choices and identify the most nutritious rescued meals.</p>
+                                </div>
+                                <a href="https://www.bsalaw.com/insight/gulfood-2025-advancements-in-food-safety-regulations-expected-in-the-uae/" class="news-link">Read More</a>
+                            </div>
+                        </div>
+
+                        <div class="news-card glass-card">
+                            <img src="https://futurefoodseries.ae/wp-content/uploads/2025/04/WhatsApp-Image-2025-04-16-at-15.12.57_641cde18-1024x535.jpg" alt="UAE Food Cluster" class="news-image">
+                            <div class="news-content">
+                                <h3>UAE Food Cluster: Driving Innovation</h3>
+                                <p class="news-brief">UAE's first economic food cluster mobilizes industry leaders to boost local production and supply chain resilience.</p>
+                                <div class="impact-section">
+                                    <h4>Impact on You</h4>
+                                    <p>More local food production means fresher options and potentially lower prices for rescued meals in your area.</p>
+                                </div>
+                                <a href="https://www.khaleejtimes.com/uae/uae-invest-in-future-of-food-minister-of-economy-highlights-pillar-of-national-agenda" class="news-link">Read More</a>
+                            </div>
+                        </div>
+
+                        <div class="news-card glass-card">
+                            <img src="https://www.tadweer.ae/wp-content/uploads/2024/02/waste-to-zero.jpg" alt="Sustainability Initiative" class="news-image">
+                            <div class="news-content">
+                                <h3>Zero Waste UAE 2025</h3>
+                                <p class="news-brief">National initiative aims to reduce food waste by 50% through community engagement and innovative technology solutions.</p>
+                                <div class="impact-section">
+                                    <h4>Impact on You</h4>
+                                    <p>As part of this movement, you'll see more restaurants joining Ne'matuk and increased rewards for your waste reduction efforts.</p>
+                                </div>
+                                <a href="#" class="news-link">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-slider-dots">
+                        <span class="news-dot active" data-news-slide="0"></span>
+                        <span class="news-dot" data-news-slide="1"></span>
+                        <span class="news-dot" data-news-slide="2"></span>
+                        <span class="news-dot" data-news-slide="3"></span>
+                    </div>
+                </div>
+                </section>
+
+            <!-- EXPLORE SECTION -->
+            <section id="explore-section" class="page-section hidden">
+                <h2 class="section-title">Explore Restaurants & Stores</h2>
+                <div class="glass-card search-bar"><i class="fas fa-search"></i><input type="text"
+                        placeholder="Search for food, groceries, cafes..."></div>
+                <div class="filter-tabs">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="restaurants">Restaurants</button>
+                    <button class="filter-btn" data-filter="cafes">Cafes</button>
+                    <button class="filter-btn" data-filter="bakeries">Bakeries</button>
+                    <button class="filter-btn" data-filter="markets">Markets & Groceries</button>
+                </div>
+                <div class="explore-grid">
+                    <div class="glass-card business-card"><img
+                            src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80"
+                            alt="Restaurant">
+                        <h3>Artisan Bakes Cafe</h3>
+                        <p>Bakery & Cafe</p>
+                    </div>
+                    <div class="glass-card business-card"><img
+                            src="https://images.unsplash.com/photo-1571091718767-18b5b1457add?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1172&q=80"
+                            alt="Burger Joint">
+                        <h3>Burger Hub</h3>
+                        <p>Fast Food</p>
+                    </div>
+                    <div class="glass-card business-card"><img
+                            src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+                            alt="Groceries">
+                        <h3>Fresh Produce Mart</h3>
+                        <p>Groceries</p>
+                    </div>
+                    <div class="glass-card business-card"><img
+                            src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                            alt="Sushi place">
+                        <h3>Sushi Central</h3>
+                        <p>Japanese Restaurant</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- REPLACE THE ENTIRE NematukGPT SECTION WITH THIS: -->
+
+<!-- AI RECIPES SECTION -->
+<section id="ai-recipes-section" class="page-section hidden">
+    <div class="nematukgpt-dashboard">
+        
+
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            
+            <!-- Budget & Smart Shopping Section -->
+            <div class="dashboard-card budget-shopping-card">
+                <h3 class="card-title">Budget & Smart Shopping</h3>
+                
+                <!-- Budget Status -->
+                <div class="budget-section">
+                    <div class="budget-header">
+                        <span class="budget-label">Monthly Budget</span>
+                        <span class="budget-amount">2,500 AED</span>
+                    </div>
+                    
+                    <div class="budget-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 48%"></div>
+                        </div>
+                        <div class="budget-details">
+                            <span class="spent">1,200 AED Spent</span>
+                            <span class="remaining">1,300 AED Remaining</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggested Shopping List -->
+                <div class="shopping-list-section">
+                    <h4 class="subsection-title">Suggested Shopping List</h4>
+                    <div class="shopping-items">
+                        <div class="shopping-item">
+                            <div class="item-checkbox">
+                                <input type="checkbox" id="bananas" class="custom-checkbox">
+                                <label for="bananas"></label>
+                            </div>
+                            <div class="item-info">
+                                <span class="item-name">Organic Bananas</span>
+                                <span class="item-price">~ 2.50 AED</span>
+                            </div>
+                        </div>
+                        
+                        <div class="shopping-item">
+                            <div class="item-checkbox">
+                                <input type="checkbox" id="bread" class="custom-checkbox">
+                                <label for="bread"></label>
+                            </div>
+                            <div class="item-info">
+                                <span class="item-name">Whole Wheat Bread</span>
+                                <span class="item-price">~ 3.00 AED</span>
+                            </div>
+                        </div>
+                        
+                        <div class="shopping-item">
+                            <div class="item-checkbox">
+                                <input type="checkbox" id="milk" class="custom-checkbox">
+                                <label for="milk"></label>
+                            </div>
+                            <div class="item-info">
+                                <span class="item-name">Almond Milk</span>
+                                <span class="item-price">~ 4.00 AED</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="view-full-list-btn">View Full List</button>
+                </div>
+
+                <!-- Shop Nearby Section -->
+                <div class="shop-nearby-section">
+                    <h4 class="subsection-title">Shop Your Items</h4>
+                    <div class="nearby-stores">
+                        <div class="store-item">
+                            <div class="store-icon carrefour">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="store-info">
+                                <span class="store-name">Town Supermarket</span>
+                                <span class="store-distance">0.8 km away</span>
+                            </div>
+                            <button class="shop-btn">Shop</button>
+                        </div>
+                        
+                        <div class="store-item">
+                            <div class="store-icon spinneys">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <div class="store-info">
+                                <span class="store-name">Organic Shop</span>
+                                <span class="store-distance">1.2 km away</span>
+                            </div>
+                            <button class="shop-btn">Shop</button>
+                        </div>
+                        
+                        <div class="store-item">
+                            <div class="store-icon lulu">
+                                <i class="fas fa-shopping-basket"></i>
+                            </div>
+                            <div class="store-info">
+                                <span class="store-name">Hypermarket</span>
+                                <span class="store-distance">1.5 km away</span>
+                            </div>
+                            <button class="shop-btn">Shop</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Recipe Generator Section -->
+            <div class="dashboard-card recipe-generator-card">
+                <h3 class="card-title">AI Recipe Generator</h3>
+                
+                <!-- Filter Section -->
+                <div class="recipe-filter">
+                    <label class="filter-label">Filter by main ingredient</label>
+                    <select class="ingredient-select">
+                        <option value="all">All</option>
+                        <option value="chicken">Chicken</option>
+                        <option value="vegetables">Vegetables</option>
+                        <option value="pasta">Pasta</option>
+                        <option value="rice">Rice</option>
+                    </select>
+                </div>
+
+                <!-- Generated Recipes -->
+                <div class="generated-recipes">
+                    <div class="recipe-card">
+                        <img src="https://familystylefood.com/wp-content/uploads/2023/05/Pasta-Primavera-bowl.jpg" alt="Pasta Primavera" class="recipe-image">
+                        <div class="recipe-info">
+                            <h4 class="recipe-title">Pasta Primavera</h4>
+                            <p class="recipe-ingredients">Uses: Tomatoes, Onions</p>
+                        </div>
+                    </div>
+                    
+                    <div class="recipe-card">
+                        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=300&h=200&fit=crop" alt="Chicken Avocado Salad" class="recipe-image">
+                        <div class="recipe-info">
+                            <h4 class="recipe-title">Chicken & Avocado Salad</h4>
+                            <p class="recipe-ingredients">Uses: Chicken, Avocado, Lettuce</p>
+                        </div>
+                    </div>
+                    
+                    <div class="recipe-card">
+                        <img src="https://images.unsplash.com/photo-1547592180-85f173990554?w=300&h=200&fit=crop" alt="Tomato Soup" class="recipe-image">
+                        <div class="recipe-info">
+                            <h4 class="recipe-title">Tomato Soup</h4>
+                            <p class="recipe-ingredients">Uses: Tomatoes, Onions</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Generate More Button -->
+                <button class="generate-more-btn">
+                    <i class="fas fa-sparkles"></i>
+                    Generate More Recipes
+                </button>
+            </div>
+
+            <!-- Smart Pantry Section -->
+            <div class="dashboard-card pantry-card-full">
+                <div class="pantry-header">
+                    <h3 class="card-title">Smart Pantry</h3>
+                    <button class="scan-receipt-btn">
+                        <i class="fas fa-qrcode"></i>
+                        Scan Receipt or Barcode
+                    </button>
+                </div>
+
+                <!-- Pantry Grid -->
+                <div class="pantry-grid">
+                    <div class="pantry-item warning">
+                        <div class="item-icon">🍅</div>
+                        <div class="item-details">
+                            <span class="item-name">Tomatoes</span>
+                            <span class="expiry-info">Expires: In 3 days</span>
+                        </div>
+                        <div class="status-indicator warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="pantry-item urgent">
+                        <div class="item-icon">🍗</div>
+                        <div class="item-details">
+                            <span class="item-name">Chicken Breast</span>
+                            <span class="expiry-info">Expires: Tomorrow</span>
+                        </div>
+                        <div class="status-indicator urgent">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="pantry-item fresh">
+                        <div class="item-icon">🥛</div>
+                        <div class="item-details">
+                            <span class="item-name">Milk</span>
+                            <span class="expiry-info">Expires: In 5 days</span>
+                        </div>
+                        <div class="status-indicator fresh">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="pantry-item warning">
+                        <div class="item-icon">🥬</div>
+                        <div class="item-details">
+                            <span class="item-name">Lettuce</span>
+                            <span class="expiry-info">Expires: In 2 days</span>
+                        </div>
+                        <div class="status-indicator warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="pantry-item fresh">
+                        <div class="item-icon">🥚</div>
+                        <div class="item-details">
+                            <span class="item-name">Eggs</span>
+                            <span class="expiry-info">Expires: In 1 week</span>
+                        </div>
+                        <div class="status-indicator fresh">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="pantry-item urgent">
+                        <div class="item-icon">🥑</div>
+                        <div class="item-details">
+                            <span class="item-name">Avocado</span>
+                            <span class="expiry-info">Expires: Today</span>
+                        </div>
+                        <div class="status-indicator urgent">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+            
+
+            <!-- COMMUNITY AWARENESS SECTION -->
+            <section id="awareness-section" class="page-section hidden">
+                <h2 class="section-title">Community Hub</h2>
+
+                <div class="filter-tabs">
+                    <button class="filter-btn active" data-target="awareness-feed">All Posts</button>
+                    <button class="filter-btn" data-target="campaigns-page">Campaigns</button>
+                    <button class="filter-btn" data-target="creators-page">Creators</button>
+                    <button class="filter-btn" data-target="challenges-page">Challenges</button>
+                    <button class="filter-btn" data-target="courses-page">Courses</button>
+                </div>
+
+                <!-- Main Feed -->
+                <div id="awareness-feed" class="awareness-content active">
+                    <!-- Campaign Post -->
+                    <div class="glass-card social-post">
+                        <div class="post-header">
+                            <div class="profile-avatar government-badge"><i class="fas fa-landmark"></i></div>
+                            <div class="post-info">
+                                <h3>UAE Food Security Council</h3>
+                                <p>2 hours ago • <i class="fas fa-check-circle verified"></i></p>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <p>🌱 Join our #ZeroWasteUAE initiative! Together, we can reduce food waste by 50% this
+                                year. Every meal saved makes a difference! 🇦🇪</p>
+                            <div class="campaign-banner">
+                                <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                                    alt="Zero Waste Campaign">
+                                <div class="banner-overlay">
+                                    <h4>#ZeroWasteUAE</h4>
+                                    <span>Building a Sustainable Future</span>
+                                </div>
+                            </div>
+                            <div class="hashtags">
+                                <span>#ZeroWasteUAE</span>
+                                <span>#FoodSecurity</span>
+                                <span>#Sustainability</span>
+                            </div>
+                        </div>
+                        <div class="post-actions">
+                            <button class="engagement-btn"><i class="fas fa-heart"></i> 245</button>
+                            <button class="engagement-btn"><i class="fas fa-comment"></i> 32</button>
+                            <button class="engagement-btn"><i class="fas fa-share"></i> Share</button>
+                        </div>
+                    </div>
+
+                    <!-- Challenge Card -->
+                    <div class="glass-card social-post challenge-card">
+                        <div class="post-header">
+                            <div class="profile-avatar challenge-badge"><i class="fas fa-trophy"></i></div>
+                            <div class="post-info">
+                                <h3>Weekly Challenge</h3>
+                                <p>5 hours ago</p>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <div class="challenge-title">
+                                <h4>🍳 Cook Without Waste Challenge</h4>
+                                <span class="time-left">7 days left</span>
+                            </div>
+                            <p>Create delicious meals using ingredients that would otherwise go to waste. Share your
+                                recipes and win points!</p>
+                            <div class="progress-container">
+                                <div class="progress-header">
+                                    <span>Your Progress</span>
+                                    <span class="progress-text">2/5 meals</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 40%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn challenge-join">Join Challenge</button>
+                        </div>
+                    </div>
+
+                    <!-- Creator Content -->
+                    <div class="glass-card social-post">
+                        <div class="post-header">
+                            <div class="profile-avatar creator-avatar small" style="background-image: url('./img/sarah-almansouri.jpeg')"> </div>
+                            <div class="post-info">
+                                <h3>Sarah Al Mansouri <span class="creator-tag">Creator</span></h3>
+                                <p>1 day ago</p>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <p>Just made the most amazing leftover transformation! 🌟 Turned yesterday's rice into
+                                crispy sushi rice bites. Check out my recipe! 👇</p>
+                            <div class="video-card">
+                                <img src="https://www.bhg.com/thmb/GGbLGk52369Z1sWXyLCbGiubYu0=/6000x0/filters:no_upscale():strip_icc()/BHG-Crispy-Rice-Sushi-Bites-5CVUpf-qqbcA_QHYeSbGhJ-f475fca42dc344d5897f698cbe719757.jpg"
+                                    alt="Sushi Rice Recipe">
+                                <div class="play-overlay">
+                                    <i class="fas fa-play"></i>
+                                    <span class="duration">3:24</span>
+                                </div>
+                            </div>
+                            <div class="hashtags">
+                                <span>#LeftoverHacks</span>
+                                <span>#RecipeVideo</span>
+                                <span>#ZeroWaste</span>
+                            </div>
+                        </div>
+                        <div class="post-actions">
+                            <button class="engagement-btn liked"><i class="fas fa-heart"></i> 189</button>
+                            <button class="engagement-btn"><i class="fas fa-comment"></i> 40</button>
+                            <button class="engagement-btn"><i class="fas fa-share"></i> Share</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campaigns Page -->
+                <div id="campaigns-page" class="awareness-content hidden">
+                    <div class="page-header">
+                        <h3>Government Campaigns</h3>
+                        <p>Official initiatives from UAE Food Security Council and Media Council</p>
+                    </div>
+
+                    <div class="glass-card campaign-feature">
+                        <div class="campaign-banner large">
+                            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                                alt="Zero Waste Campaign">
+                            <div class="banner-overlay">
+                                <h3>#ZeroWasteUAE 2025</h3>
+                                <p>Join the national movement to reduce food waste by 50%</p>
+                                <button class="action-btn">Learn More</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="subsection-title">Active Campaigns</h4>
+                    <div class="campaigns-grid">
+                        <div class="glass-card campaign-card">
+                            <img src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
+                                alt="School Program">
+                            <div class="campaign-info">
+                                <h4>Schools Against Waste</h4>
+                                <p>Educational program reaching 500+ schools across UAE</p>
+                                <div class="campaign-stats">
+                                    <span><i class="fas fa-users"></i> 15,234 students</span>
+                                    <span><i class="fas fa-calendar"></i> 3 months left</span>
+                                </div>
+                            </div>
+                            <button class="action-btn">Join Campaign</button>
+                        </div>
+
+                        <div class="glass-card campaign-card">
+                            <img src="https://www.caterermiddleeast.com/cloud/2025/06/11/Copy-of-MA2_9712-1536x1024.jpg"
+                                alt="Restaurant Initiative">
+                            <div class="campaign-info">
+                                <h4>Restaurant Heroes</h4>
+                                <p>Partnering with local restaurants to reduce kitchen waste</p>
+                                <div class="campaign-stats">
+                                    <span><i class="fas fa-utensils"></i> 234 restaurants</span>
+                                    <span><i class="fas fa-leaf"></i> 2.3k kg saved</span>
+                                </div>
+                            </div>
+                            <button class="action-btn">Join Campaign</button>
+                        </div>
+
+                        <div class="glass-card campaign-card">
+                            <img src="https://blog.jobxdubai.com/wp-content/uploads/2024/10/jobxdubai_a_lemon_tree_growing_in_the_backyard_of_a_dubai_man_51be4e56-fe21-47a6-a814-4596ae214734_0.png?w=1024"
+                                alt="Community Gardens">
+                            <div class="campaign-info">
+                                <h4>Community Gardens</h4>
+                                <p>Growing fresh produce in neighborhoods across Dubai</p>
+                                <div class="campaign-stats">
+                                    <span><i class="fas fa-seedling"></i> 45 gardens</span>
+                                    <span><i class="fas fa-home"></i> 12 communities</span>
+                                </div>
+                            </div>
+                            <button class="action-btn">Join Campaign</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Creators Page -->
+                <div id="creators-page" class="awareness-content hidden">
+                    <div class="page-header">
+                        <h3>Content Creators</h3>
+                        <p>Follow inspiring creators sharing sustainable living tips</p>
+                    </div>
+
+                    <h4 class="subsection-title">Featured Creators</h4>
+                    <div class="creators-grid">
+                        <div class="glass-card creator-profile">
+                            <div class="creator-header">
+                                <div class="creator-avatar large"
+                                    style="background-image: url('./img/sarah-almansouri.jpeg')">
+                                </div>
+                                <div class="creator-info">
+                                    <h4>Sarah Al Mansouri</h4>
+                                    <p>Food Sustainability Expert</p>
+                                    <div class="creator-stats">
+                                        <span>12.5k followers</span>
+                                        <span>•</span>
+                                        <span>156 posts</span>
+                                    </div>
+                                </div>
+                                <button class="follow-btn">Follow</button>
+                            </div>
+                            <div class="recent-content">
+                                <h5>Recent Content</h5>
+                                <div class="content-preview">
+                                    <div class="content-item">
+                                        <img src="https://www.thespruceeats.com/thmb/aly6SPF4FWC7hOO7OnRzuixkoUc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/leftovers-night-fried-rice-recipe-909250-hero-01-8a111a020a68478dabaf0e95703d8e6b.jpg"
+                                            alt="Recipe">
+                                        <div class="content-details">
+                                            <span class="content-title">Leftover Rice Magic</span>
+                                            <span class="content-meta">Video • 3:24 • 2.1k views</span>
+                                        </div>
+                                    </div>
+                                    <div class="content-item">
+                                        <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=80&h=80&fit=crop"
+                                            alt="Recipe">
+                                        <div class="content-details">
+                                            <span class="content-title">5-Minute Pancakes</span>
+                                            <span class="content-meta">Recipe • 892 likes</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card creator-profile">
+                            <div class="creator-header">
+                                <div class="creator-avatar large"
+                                    style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7Sl-_n9Uda8N-Pdxv2xAX6QrjFdt0hllhuw&s')">
+                                </div>
+                                <div class="creator-info">
+                                    <h4>Faisal Nasser</h4>
+                                    <p>Zero Waste Chef</p>
+                                    <div class="creator-stats">
+                                        <span>8.2k followers</span>
+                                        <span>•</span>
+                                        <span>89 posts</span>
+                                    </div>
+                                </div>
+                                <button class="follow-btn following">Following</button>
+                            </div>
+                            <div class="recent-content">
+                                <h5>Recent Content</h5>
+                                <div class="content-preview">
+                                    <div class="content-item">
+                                        <img src="https://images.unsplash.com/photo-1547592180-85f173990554?w=80&h=80&fit=crop"
+                                            alt="Recipe">
+                                        <div class="content-details">
+                                            <span class="content-title">Bread Pudding Hack</span>
+                                            <span class="content-meta">Video • 5:12 • 3.4k views</span>
+                                        </div>
+                                    </div>
+                                    <div class="content-item">
+                                        <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=80&h=80&fit=crop"
+                                            alt="Recipe">
+                                        <div class="content-details">
+                                            <span class="content-title">Pizza From Scratch</span>
+                                            <span class="content-meta">Blog Post • 1.2k reads</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="subsection-title">Latest from Creators</h4>
+                    <div class="creator-feed">
+                        <div class="glass-card social-post">
+                            <div class="post-header">
+                                <div class="profile-avatar creator-avatar small" style="background-image: url('./img/sarah-almansouri.jpeg')"> </div>
+                                <div class="post-info">
+                                    <h3>Sarah Al Mansouri <span class="creator-tag">Creator</span></h3>
+                                    <p>3 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="post-content">
+                                <p>New podcast episode is live! 🎙️ This week we're talking about seasonal eating and
+                                    how it can reduce your carbon footprint by 30%</p>
+                                <div class="podcast-card">
+                                    <img src="https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=100&h=100&fit=crop"
+                                        alt="Podcast">
+                                    <div class="podcast-info">
+                                        <h4>Seasonal Eating: A Game Changer</h4>
+                                        <p>Episode 23 • Sustainable Living Podcast</p>
+                                        <span class="duration"><i class="fas fa-clock"></i> 32 mins</span>
+                                    </div>
+                                    <div class="play-btn"><i class="fas fa-play"></i></div>
+                                </div>
+                            </div>
+                            <div class="post-actions">
+                                <button class="engagement-btn"><i class="fas fa-heart"></i> 67</button>
+                                <button class="engagement-btn"><i class="fas fa-comment"></i> 12</button>
+                                <button class="engagement-btn"><i class="fas fa-share"></i> Share</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Challenges Page -->
+                <div id="challenges-page" class="awareness-content hidden">
+                    <div class="page-header">
+                        <h3>Community Challenges</h3>
+                        <p>Join fun challenges and compete with the community</p>
+                    </div>
+
+                    <div class="glass-card my-challenges">
+                        <h4>Your Active Challenges</h4>
+                        <div class="challenge-summary">
+                            <div class="summary-item">
+                                <i class="fas fa-trophy"></i>
+                                <div>
+                                    <span class="value">3</span>
+                                    <span class="label">Active</span>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <i class="fas fa-medal"></i>
+                                <div>
+                                    <span class="value">7</span>
+                                    <span class="label">Completed</span>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <span class="value">245</span>
+                                    <span class="label">Points Earned</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="subsection-title">Weekly Challenges</h4>
+                    <div class="challenges-grid">
+                        <div class="glass-card challenge-detailed active-challenge">
+                            <div class="challenge-badge">
+                                <i class="fas fa-utensils"></i>
+                                <span class="badge-text">ACTIVE</span>
+                            </div>
+                            <div class="challenge-header">
+                                <h4>🍳 Cook Without Waste</h4>
+                                <span class="time-left">5 days left</span>
+                            </div>
+                            <p>Create 5 meals using ingredients that would otherwise go to waste. Document your
+                                creations!</p>
+                            <div class="progress-container">
+                                <div class="progress-header">
+                                    <span>Your Progress</span>
+                                    <span class="progress-text">2/5 meals</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 40%"></div>
+                                </div>
+                            </div>
+                            <div class="challenge-rewards">
+                                <span class="reward"><i class="fas fa-coins"></i> 50 Points</span>
+                                <span class="reward"><i class="fas fa-badge"></i> Chef Badge</span>
+                            </div>
+                            <div class="challenge-participants">
+                                <div class="participants-avatars">
+                                    <div class="participant-avatar"></div>
+                                    <div class="participant-avatar"></div>
+                                    <div class="participant-avatar"></div>
+                                    <div class="participants-count">+1,231</div>
+                                </div>
+                            </div>
+                            <button class="action-btn">Continue Challenge</button>
+                        </div>
+
+                        <div class="glass-card challenge-detailed">
+                            <div class="challenge-header">
+                                <h4>📸 Food Rescue Stories</h4>
+                                <span class="time-left">2 weeks left</span>
+                            </div>
+                            <p>Share your food rescue journey with photos and stories. Inspire others to join the
+                                movement!</p>
+                            <div class="challenge-rewards">
+                                <span class="reward"><i class="fas fa-coins"></i> 75 Points</span>
+                                <span class="reward"><i class="fas fa-camera"></i> Storyteller Badge</span>
+                            </div>
+                            <div class="challenge-stats">
+                                <span><i class="fas fa-users"></i> 892 participants</span>
+                                <span><i class="fas fa-images"></i> 2,341 photos shared</span>
+                            </div>
+                            <button class="action-btn">Join Challenge</button>
+                        </div>
+
+                        <div class="glass-card challenge-detailed">
+                            <div class="challenge-header">
+                                <h4>🌱 Plant-Based Week</h4>
+                                <span class="time-left">Starting Monday</span>
+                            </div>
+                            <p>Try plant-based meals for a full week. Discover delicious recipes and reduce your carbon
+                                footprint!</p>
+                            <div class="challenge-rewards">
+                                <span class="reward"><i class="fas fa-coins"></i> 100 Points</span>
+                                <span class="reward"><i class="fas fa-leaf"></i> Green Hero Badge</span>
+                            </div>
+                            <div class="challenge-stats">
+                                <span><i class="fas fa-calendar"></i> Starts in 3 days</span>
+                                <span><i class="fas fa-users"></i> 456 pre-registered</span>
+                            </div>
+                            <button class="action-btn secondary">Pre-Register</button>
+                        </div>
+                    </div>
+
+                    <h4 class="subsection-title">Monthly Challenges</h4>
+                    <div class="monthly-challenge">
+                        <div class="glass-card challenge-feature">
+                            <div class="feature-header">
+                                <div class="feature-icon"><i class="fas fa-calendar-alt"></i></div>
+                                <div class="feature-info">
+                                    <h3>September: Zero Waste Household</h3>
+                                    <p>Transform your entire household into a zero-waste zone</p>
+                                </div>
+                                <div class="feature-prize">
+                                    <span class="prize-label">Grand Prize</span>
+                                    <span class="prize-value">500 Points + Eco Kit</span>
+                                </div>
+                            </div>
+                            <div class="feature-progress">
+                                <div class="progress-stats">
+                                    <div class="stat">
+                                        <span class="stat-value">1,234</span>
+                                        <span class="stat-label">Participants</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-value">18</span>
+                                        <span class="stat-label">Days Left</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-value">2.8k</span>
+                                        <span class="stat-label">KG Saved</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="action-btn large">Join Monthly Challenge</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="courses-page" class="awareness-content hidden">
+    <div class="page-header">
+        <h3>Food Security Courses</h3>
+        <p>Learn from experts and build skills in sustainable food systems</p>
+    </div>
+
+    <!-- courses section -->
+
+    <!-- Course Categories -->
+    <div class="course-categories">
+        <h4 class="subsection-title">Browse by Category</h4>
+        <div class="categories-grid">
+            <div class="glass-card category-card">
+                <div class="category-icon" style="background: linear-gradient(135deg, #4CAF50, #8BC34A);">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <h5>Sustainable Agriculture</h5>
+                <p>8 courses</p>
+            </div>
+            
+            <div class="glass-card category-card">
+                <div class="category-icon" style="background: linear-gradient(135deg, #2196F3, #03DAC6);">
+                    <i class="fas fa-water"></i>
+                </div>
+                <h5>Water Management</h5>
+                <p>5 courses</p>
+            </div>
+            
+            <div class="glass-card category-card">
+                <div class="category-icon" style="background: linear-gradient(135deg, #FF9800, #FFC107);">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <h5>Climate & Food</h5>
+                <p>12 courses</p>
+            </div>
+            
+            <div class="glass-card category-card">
+                <div class="category-icon" style="background: linear-gradient(135deg, #9C27B0, #E91E63);">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                <h5>Food Policy</h5>
+                <p>6 courses</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Course -->
+    <div class="glass-card course-feature">
+        <div class="course-banner">
+            <img src="./img/food-sec-mock.png" alt="Food Security Fundamentals" class="course-image">
+            <div class="course-overlay">
+                <div class="course-badge featured">Featured</div>
+                <div class="course-level">Beginner Level</div>
+            </div>
+        </div>
+        <div class="course-content">
+            <h4>Food Security Fundamentals</h4>
+            <p>Comprehensive introduction to global food systems, sustainability challenges, and solutions for building resilient communities.</p>
+            <div class="course-meta">
+                <div class="course-stats">
+                    <span><i class="fas fa-clock"></i> 2.5 hours</span>
+                    <span><i class="fas fa-users"></i> 1,234 enrolled</span>
+                    <span><i class="fas fa-star"></i> 4.8/5</span>
+                    <span><i class="fas fa-certificate"></i> Certificate</span>
+                </div>
+                <div class="course-instructor">
+                    <div class="instructor-avatar" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face')"></div>
+                    <span>Dr. Ahmed Hassan</span>
+                </div>
+            </div>
+            <button class="action-btn course-enroll">Start Learning</button>
+        </div>
+    </div>
+
+    <!-- Popular Courses -->
+    <h4 class="subsection-title">Popular Courses</h4>
+    <div class="courses-grid">
+        <div class="glass-card course-card">
+            <div class="course-thumbnail">
+                <img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Urban Farming" class="course-image">
+                <div class="course-duration">1.5 hrs</div>
+                <div class="course-level-badge beginner">Beginner</div>
+            </div>
+            <div class="course-info">
+                <h5>Urban Farming Essentials</h5>
+                <p>Learn to grow food in urban environments using limited space and resources.</p>
+                <div class="course-details">
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <span>4.6</span>
+                        <span class="rating-count">(89)</span>
+                    </div>
+                    <div class="course-enrollment">234 enrolled</div>
+                </div>
+                <div class="course-instructor-mini">
+                    <div class="instructor-mini-avatar" style="background-image: url('https://images.unsplash.com/photo-1580489944761-15a19d654956?w=30&h=30&fit=crop&crop=face')"></div>
+                    <span>Sarah Mitchell</span>
+                </div>
+            </div>
+            <button class="course-btn">Enroll Now</button>
+        </div>
+
+        <div class="glass-card course-card">
+            <div class="course-thumbnail">
+                <img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Food Waste Management" class="course-image">
+                <div class="course-duration">2 hrs</div>
+                <div class="course-level-badge intermediate">Intermediate</div>
+            </div>
+            <div class="course-info">
+                <h5>Zero Waste Kitchen</h5>
+                <p>Master techniques to eliminate food waste in commercial and home kitchens.</p>
+                <div class="course-details">
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <span>4.9</span>
+                        <span class="rating-count">(156)</span>
+                    </div>
+                    <div class="course-enrollment">445 enrolled</div>
+                </div>
+                <div class="course-instructor-mini">
+                    <div class="instructor-mini-avatar" style="background-image: url('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=30&h=30&fit=crop&crop=face')"></div>
+                    <span>Marcus Chen</span>
+                </div>
+            </div>
+            <button class="course-btn">Enroll Now</button>
+        </div>
+
+        <div class="glass-card course-card">
+            <div class="course-thumbnail">
+                <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Supply Chain" class="course-image">
+                <div class="course-duration">3 hrs</div>
+                <div class="course-level-badge advanced">Advanced</div>
+            </div>
+            <div class="course-info">
+                <h5>Food Supply Chain Optimization</h5>
+                <p>Advanced strategies for building resilient and efficient food distribution networks.</p>
+                <div class="course-details">
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <span>4.7</span>
+                        <span class="rating-count">(203)</span>
+                    </div>
+                    <div class="course-enrollment">178 enrolled</div>
+                </div>
+                <div class="course-instructor-mini">
+                    <div class="instructor-mini-avatar" style="background-image: url('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=30&h=30&fit=crop&crop=face')"></div>
+                    <span>Dr. Fatima Al-Zahra</span>
+                </div>
+            </div>
+            <button class="course-btn">Enroll Now</button>
+        </div>
+
+        <div class="glass-card course-card">
+            <div class="course-thumbnail">
+                <img src="https://www.kaizenams.com/wp-content/uploads/2024/05/shutterstock_2156951943.jpg" alt="Community Gardens" class="course-image">
+                <div class="course-duration">1 hr</div>
+                <div class="course-level-badge beginner">Beginner</div>
+            </div>
+            <div class="course-info">
+                <h5>Community Garden Leadership</h5>
+                <p>Build and manage successful community food growing initiatives.</p>
+                <div class="course-details">
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <span>4.5</span>
+                        <span class="rating-count">(67)</span>
+                    </div>
+                    <div class="course-enrollment">123 enrolled</div>
+                </div>
+                <div class="course-instructor-mini">
+                    <div class="instructor-mini-avatar" style="background-image: url('https://images.unsplash.com/photo-1494790108755-2616b332e234?w=30&h=30&fit=crop&crop=face')"></div>
+                    <span>Layla Ibrahim</span>
+                </div>
+            </div>
+            <button class="course-btn">Enroll Now</button>
+        </div>
+
+        <div class="glass-card course-card">
+            <div class="course-thumbnail">
+                <img src="https://sfast.ae/wp-content/uploads/elementor/thumbs/person-in-charge-r56o4eje95i6olbyehpc1bdu3por9g7n0tj9lvj4og.jpg" alt="Food Safety" class="course-image">
+                <div class="course-duration">2.5 hrs</div>
+                <div class="course-level-badge intermediate">Intermediate</div>
+            </div>
+            <div class="course-info">
+                <h5>Food Safety & Regulations</h5>
+                <p>Navigate food safety standards and regulations for sustainable food businesses.</p>
+                <div class="course-details">
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <span>4.8</span>
+                        <span class="rating-count">(291)</span>
+                    </div>
+                    <div class="course-enrollment">567 enrolled</div>
+                </div>
+                <div class="course-instructor-mini">
+                    <div class="instructor-mini-avatar" style="background-image: url('https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=30&h=30&fit=crop&crop=face')"></div>
+                    <span>Omar Al-Rashid</span>
+                </div>
+            </div>
+            <button class="course-btn">Enroll Now</button>
+        </div>
+
+        <div class="glass-card course-card">
+            <div class="course-thumbnail">
+                <img src="https://www.nshm.com/wp-content/uploads/2023/03/Blog-2.jpg" alt="Nutrition Education" class="course-image">
+                <div class="course-duration">1.5 hrs</div>
+                <div class="course-level-badge beginner">Beginner</div>
+            </div>
+            <div class="course-info">
+                <h5>Nutrition Education for Communities</h5>
+                <p>Design effective nutrition education programs for diverse populations.</p>
+                <div class="course-details">
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <span>4.4</span>
+                        <span class="rating-count">(112)</span>
+                    </div>
+                    <div class="course-enrollment">189 enrolled</div>
+                </div>
+                <div class="course-instructor-mini">
+                    <div class="instructor-mini-avatar" style="background-image: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=30&h=30&fit=crop&crop=face')"></div>
+                    <span>Amina Hassan</span>
+                </div>
+            </div>
+            <button class="course-btn">Enroll Now</button>
+        </div>
+    </div>
+
+    <!-- Learning Paths -->
+    <div class="learning-paths">
+        <h4 class="subsection-title">Learning Paths</h4>
+        <div class="paths-grid">
+            <div class="glass-card learning-path">
+                <div class="path-header">
+                    <div class="path-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <div class="path-info">
+                        <h5>Food Security Specialist</h5>
+                        <p>Complete pathway to becoming a food security expert</p>
+                    </div>
+                </div>
+                <div class="path-progress">
+                    <div class="progress-stats">
+                        <span>5 courses</span>
+                        <span>•</span>
+                        <span>12-15 hours</span>
+                        <span>•</span>
+                        <span>Professional Certificate</span>
+                    </div>
+                    <div class="path-courses">
+                        <div class="course-dot completed"></div>
+                        <div class="course-dot completed"></div>
+                        <div class="course-dot current"></div>
+                        <div class="course-dot"></div>
+                        <div class="course-dot"></div>
+                    </div>
+                </div>
+                <button class="action-btn path-continue">Continue Path</button>
+            </div>
+
+            <div class="glass-card learning-path">
+                <div class="path-header">
+                    <div class="path-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <div class="path-info">
+                        <h5>Urban Agriculture Expert</h5>
+                        <p>Master urban farming and community food systems</p>
+                    </div>
+                </div>
+                <div class="path-progress">
+                    <div class="progress-stats">
+                        <span>4 courses</span>
+                        <span>•</span>
+                        <span>8-10 hours</span>
+                        <span>•</span>
+                        <span>Specialization Certificate</span>
+                    </div>
+                    <div class="path-courses">
+                        <div class="course-dot"></div>
+                        <div class="course-dot"></div>
+                        <div class="course-dot"></div>
+                        <div class="course-dot"></div>
+                    </div>
+                </div>
+                <button class="action-btn secondary path-start">Start Path</button>
+            </div>
+        </div>
+    </div>
+</div>
+            </section>
+            <!-- REWARDS SECTION -->
+            <section id="rewards-section" class="page-section hidden">
+                <h2 class="section-title">Your Rewards</h2>
+                <div class="glass-card points-balance">
+                    <div class="label">Your Points Balance</div>
+                    <div class="value">127</div>
+                    <div class = "points-info">Turn every action into impact—rescue food, join challenges, share your voice, and grow through courses to earn points and make a difference.</div>
+                </div>
+                <div class="rewards-grid">
+                    <div class="glass-card reward-card"><i class="fas fa-seedling"></i>
+                        <div class="food-info">
+                            <h3>Seed Kit</h3>
+                            <p>Grow-your-own herb kit (basil, mint, etc.)</p>
+                            <div class="reward-cost">75 Points</div>
+                        </div><button class="action-btn">Redeem</button>
+                    </div>
+                    <div class="glass-card reward-card"><i class="fas fa-solar-panel"></i>
+                        <div class="food-info">
+                            <h3>Solar Charger</h3>
+                            <p>Mini solar-powered phone charger</p>
+                            <div class="reward-cost">150 Points</div>
+                        </div><button class="action-btn">Redeem</button>
+                    </div>
+                    <div class="glass-card reward-card"><i class="fas fa-book"></i>
+                        <div class="food-info">
+                            <h3>Eco Journal</h3>
+                            <p>Made from 100% recycled paper</p>
+                            <div class="reward-cost">60 Points</div>
+                        </div><button class="action-btn">Redeem</button>
+                    </div>
+                    <div class="glass-card reward-card"><i class="fas fa-utensils"></i>
+                        <div class="food-info">
+                            <h3>Bamboo Cutlery Kit</h3>
+                            <p>Portable utensils to avoid single-use plastic</p>
+                            <div class="reward-cost">90 Points</div>
+                        </div><button class="action-btn">Redeem</button>
+                    </div>
+                    <div class="glass-card reward-card"><i class="fas fa-percent"></i>
+                        <div class="food-info">
+                            <h3>10% Off Next Purchase</h3>
+                            <p>Discount on your next rescue</p>
+                            <div class="reward-cost">100 Points</div>
+                        </div><button class="action-btn">Redeem</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PROFILE SECTION -->
+            <section id="profile-section" class="page-section hidden">
+                <div class="profile-header">
+                    <div class="profile-avatar creator-avatar small" style="background-image: url('./img/ahmed-al-falahi.jpeg')"> </div>
+                    <h2 id="profile-name">Ahmed Al Falahi</h2>
+                    <p id="profile-email">demo.user@example.com</p>
+                </div>
+                <div class="profile-options">
+                    <a href="#" class="glass-card profile-option"><i class="fas fa-edit"></i><span>Edit Profile</span><i
+                            class="fas fa-chevron-right"></i></a>
+                    <a href="#" class="glass-card profile-option"><i
+                            class="fas fa-bell"></i><span>Notifications</span><i class="fas fa-chevron-right"></i></a>
+                    <a href="#" class="glass-card profile-option"><i class="fas fa-cog"></i><span>Settings</span><i
+                            class="fas fa-chevron-right"></i></a>
+                    <a href="#" class="glass-card profile-option"><i class="fas fa-comment-dots"></i><span>Feedback &
+                            Reports</span><i class="fas fa-chevron-right"></i></a>
+                    <a href="#" class="glass-card profile-option"><i class="fas fa-question-circle"></i><span>Help &
+                            Support</span><i class="fas fa-chevron-right"></i></a>
+                    <a href="auth.html" class="glass-card profile-option logout-btn"><i
+                            class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <nav class="bottom-nav">
+        <ul class="nav-items">
+            <li class="nav-item active"><a href="#" data-target="home-section"><i
+                        class="fas fa-home"></i><span>Home</span></a></li>
+            <li class="nav-item"><a href="#" data-target="explore-section"><i
+                        class="fas fa-search"></i><span>Explore</span></a></li>
+            <li class="nav-item"><a href="#" data-target="ai-recipes-section"><i
+                        class="fas fa-robot"></i><span>NematukGPT</span></a></li>
+            <li class="nav-item"><a href="#" data-target="awareness-section"><i
+                        class="fas fa-sprout"></i><span>Awareness</span></a></li>
+            <li class="nav-item"><a href="#" data-target="rewards-section"><i
+                        class="fas fa-gift"></i><span>Rewards</span></a></li>
+            <li class="nav-item"><a href="#" data-target="profile-section"><i
+                        class="fas fa-user"></i><span>Profile</span></a></li>
+        </ul>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Function to switch to awareness section
+        function switchToAwareness() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const pageSections = document.querySelectorAll('.page-section');
+            
+            // Remove active class from all nav items
+            navItems.forEach(nav => nav.classList.remove('active'));
+            
+            // Find and activate awareness nav item
+            navItems.forEach(item => {
+                const link = item.querySelector('a[data-target="awareness-section"]');
+                if (link) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Hide all sections and show awareness section
+            pageSections.forEach(section => {
+                section.classList.add('hidden');
+                section.classList.remove('active');
+            });
+            
+            const awarenessSection = document.getElementById('awareness-section');
+            if (awarenessSection) {
+                awarenessSection.classList.remove('hidden');
+                awarenessSection.classList.add('active');
+            }
+            
+            // Update header
+            const welcomeTitle = document.getElementById('welcome-title');
+            const welcomeSubtitle = document.getElementById('welcome-subtitle');
+            if (welcomeTitle) welcomeTitle.textContent = "Community Awareness";
+            if (welcomeSubtitle) welcomeSubtitle.textContent = "Connect, share, and make an impact together.";
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            particlesJS("particles-js", { "particles": { "number": { "value": 8, "density": { "enable": true, "value_area": 800 } }, "color": { "value": ["#A450E4", "#49E7CD"] }, "shape": { "type": "circle" }, "opacity": { "value": 0.2, "random": true }, "size": { "value": 150, "random": true, "anim": { "enable": true, "speed": 1.5, "size_min": 50, "sync": false } }, "line_linked": { "enable": false }, "move": { "enable": true, "speed": 1.5, "direction": "none", "random": true, "straight": false, "out_mode": "out", "bounce": false } }, "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": false }, "onclick": { "enable": false }, "resize": true } }, "retina_detect": true });
+
+            const ctx = document.getElementById('impactChart').getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+            gradient.addColorStop(0, 'rgba(73, 231, 205, 0.4)');
+            gradient.addColorStop(1, 'rgba(73, 231, 205, 0)');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                    datasets: [{
+                        label: 'Meals Rescued',
+                        data: [2, 5, 3, 6, 4, 8, 5],
+                        borderColor: '#49E7CD',
+                        backgroundColor: gradient,
+                        pointBackgroundColor: '#49E7CD',
+                        pointBorderColor: '#1A1D2E',
+                        pointHoverBackgroundColor: '#F0F4F8',
+                        pointHoverBorderColor: '#49E7CD',
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBorderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Meals Rescued',
+                                color: '#F0F4F8',
+                                font: {
+                                    family: "'Poppins', sans-serif",
+                                    size: 14,
+                                    weight: '500'
+                                },
+                                padding: { bottom: 10 }
+                            },
+                            grid: { color: 'rgba(240, 244, 248, 0.1)' },
+                            ticks: {
+                                color: '#F0F4F8',
+                                font: { family: "'Poppins', sans-serif" },
+                                padding: 5
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Days of the Week',
+                                color: '#F0F4F8',
+                                font: {
+                                    family: "'Poppins', sans-serif",
+                                    size: 14,
+                                    weight: '500'
+                                },
+                                padding: { top: 10 }
+                            },
+                            grid: { display: false },
+                            ticks: {
+                                color: '#F0F4F8',
+                                font: { family: "'Poppins', sans-serif" },
+                                padding: 5
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1A1D2E',
+                            titleFont: { family: "'Poppins', sans-serif", size: 14 },
+                            bodyFont: { family: "'Poppins', sans-serif", size: 12 },
+                            padding: 10,
+                            cornerRadius: 8,
+                            displayColors: false
+                        }
+                    }
+                }
+            });
+
+            // Stats Slider Logic
+            let currentSlide = 0;
+            const slides = document.querySelectorAll('.stat-card');
+            const dots = document.querySelectorAll('.dot');
+            const slider = document.querySelector('.stats-slider');
+
+            function showSlide(index) {
+                currentSlide = index;
+                slider.style.transform = `translateX(-${index * 25}%)`; // Move by 25% for each slide
+
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index);
+                });
+            }
+
+            // Dot navigation
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => showSlide(index));
+            });
+
+            // Auto-slide every 3 seconds
+            setInterval(() => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            }, 3000);
+
+            // Touch/swipe support for mobile
+            let startX = 0;
+            let endX = 0;
+
+            slider.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+            });
+
+            slider.addEventListener('touchend', (e) => {
+                endX = e.changedTouches[0].clientX;
+                handleSwipe();
+            });
+
+            function handleSwipe() {
+                const threshold = 50;
+                if (startX - endX > threshold) {
+                    // Swipe left - next slide
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    showSlide(currentSlide);
+                } else if (endX - startX > threshold) {
+                    // Swipe right - previous slide
+                    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                    showSlide(currentSlide);
+                }
+            }
+
+            // News Slider Logic (Safe version)
+            let currentNewsSlide = 0;
+            const newsSlides = document.querySelectorAll('.news-card');
+            const newsDots = document.querySelectorAll('.news-dot');
+            const newsSlider = document.querySelector('.news-slider');
+
+            // Only initialize news slider if elements exist
+            if (newsSlider && newsSlides.length > 0 && newsDots.length > 0) {
+                function showNewsSlide(index) {
+                    currentNewsSlide = index;
+                    newsSlider.style.transform = `translateX(-${index * 25}%)`; // Move by 25% for each slide
+
+                    newsDots.forEach((dot, i) => {
+                        dot.classList.toggle('active', i === index);
+                    });
+                }
+
+                // News dot navigation
+                newsDots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => showNewsSlide(index));
+                });
+
+                // Auto-slide news every 5 seconds (different from stats)
+                setInterval(() => {
+                    // Only auto-slide if we're on the home page and elements still exist
+                    if (document.querySelector('#home-section.active') && newsSlides.length > 0) {
+                        currentNewsSlide = (currentNewsSlide + 1) % newsSlides.length;
+                        showNewsSlide(currentNewsSlide);
+                    }
+                }, 5000);
+
+                // Touch/swipe support for news slider
+                let newsStartX = 0;
+                let newsEndX = 0;
+
+                newsSlider.addEventListener('touchstart', (e) => {
+                    newsStartX = e.touches[0].clientX;
+                });
+
+                newsSlider.addEventListener('touchend', (e) => {
+                    newsEndX = e.changedTouches[0].clientX;
+                    handleNewsSwipe();
+                });
+
+                function handleNewsSwipe() {
+                    const threshold = 50;
+                    if (newsStartX - newsEndX > threshold) {
+                        // Swipe left - next slide
+                        currentNewsSlide = (currentNewsSlide + 1) % newsSlides.length;
+                        showNewsSlide(currentNewsSlide);
+                    } else if (newsEndX - newsStartX > threshold) {
+                        // Swipe right - previous slide
+                        currentNewsSlide = (currentNewsSlide - 1 + newsSlides.length) % newsSlides.length;
+                        showNewsSlide(currentNewsSlide);
+                    }
+                }
+            }
+
+            // SPA Navigation Logic
+            const navItems = document.querySelectorAll('.nav-item');
+            const pageSections = document.querySelectorAll('.page-section');
+            const welcomeTitle = document.getElementById('welcome-title');
+            const welcomeSubtitle = document.getElementById('welcome-subtitle');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const targetId = item.querySelector('a').dataset.target;
+
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    pageSections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.classList.remove('hidden');
+                            section.classList.add('active');
+                        } else {
+                            section.classList.add('hidden');
+                            section.classList.remove('active');
+                        }
+                    });
+
+                    // Hide header on profile page for a cleaner look
+                    if (targetId === 'profile-section') {
+                        document.querySelector('header').style.display = 'none';
+                    } else {
+                        document.querySelector('header').style.display = 'flex';
+                    }
+
+                    // Update header title based on section
+                    if (targetId === 'ai-recipes-section') {
+                        welcomeTitle.textContent = "NematukGPT Assistant";
+                        welcomeSubtitle.textContent = "Your smart food and budget management companion.";
+                    } else if (targetId === 'awareness-section') {
+                        welcomeTitle.textContent = "Community Awareness";
+                        welcomeSubtitle.textContent = "Connect, share, and make an impact together.";
+
+                        // Reset to main feed when entering awareness section
+                        const awarenessFilterBtns = document.querySelectorAll('.filter-btn[data-target]');
+                        const awarenessContents = document.querySelectorAll('.awareness-content');
+
+                        awarenessFilterBtns.forEach(b => b.classList.remove('active'));
+                        if (awarenessFilterBtns.length) awarenessFilterBtns[0].classList.add('active');
+
+                        awarenessContents.forEach(content => {
+                            if (content.id === 'awareness-feed') {
+                                content.classList.remove('hidden');
+                                content.classList.add('active');
+                            } else {
+                                content.classList.add('hidden');
+                                content.classList.remove('active');
+                            }
+                        });
+                    } 
+                    else if (targetId === 'home-section') {
+                        welcomeTitle.textContent = "Welcome Back, Ahmed!";
+                        welcomeSubtitle.textContent = "Let's make a difference today!";
+                    } else {
+                        // Default: use nav label and section name
+                        welcomeTitle.textContent = document.querySelector(`a[data-target="${targetId}"] span`).textContent;
+                        welcomeSubtitle.textContent = `you are now viewing the ${targetId.split('-')[0]} page.`;
+                    }
+
+                    window.scrollTo(0, 0); // Scroll to top on page change
+                });
+            });
+
+            // Awareness section navigation (fix: only for awareness tabs)
+            const awarenessFilterBtns = document.querySelectorAll('.filter-btn[data-target]');
+            const awarenessContents = document.querySelectorAll('.awareness-content');
+
+            awarenessFilterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.dataset.target;
+
+                    // Update active button
+                    awarenessFilterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // Show target content
+                    awarenessContents.forEach(content => {
+                        if (content.id === targetId) {
+                            content.classList.remove('hidden');
+                            content.classList.add('active');
+                        } else {
+                            content.classList.add('hidden');
+                            content.classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            // Like button functionality (move outside nav click)
+            const likeButtons = document.querySelectorAll('.engagement-btn');
+            likeButtons.forEach(btn => {
+                if (btn.innerHTML.includes('heart')) {
+                    btn.addEventListener('click', () => {
+                        btn.classList.toggle('liked');
+                        // Update like count
+                        const currentText = btn.innerHTML;
+                        const match = currentText.match(/\d+/);
+                        if (!match) return;
+                        const currentCount = parseInt(match[0]);
+                        if (btn.classList.contains('liked')) {
+                            btn.innerHTML = currentText.replace(/\d+/, currentCount + 1);
+                            btn.style.color = '#FF6B6B';
+                        } else {
+                            btn.innerHTML = currentText.replace(/\d+/, currentCount - 1);
+                            btn.style.color = '';
+                        }
+                    });
+                }
+            });
+
+            // Follow button functionality (move outside nav click)
+            const followButtons = document.querySelectorAll('.follow-btn');
+            followButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (btn.classList.contains('following')) {
+                        btn.classList.remove('following');
+                        btn.textContent = 'Follow';
+                    } else {
+                        btn.classList.add('following');
+                        btn.textContent = 'Following';
+                    }
+                });
+            });
+
+            // Challenge join functionality (move outside nav click)
+            const challengeJoinButtons = document.querySelectorAll('.challenge-join, .action-btn');
+            challengeJoinButtons.forEach(btn => {
+                if (btn.textContent.includes('Join') || btn.textContent.includes('Continue')) {
+                    btn.addEventListener('click', () => {
+                        // You can implement actual challenge join logic here
+                        if (btn.textContent.includes('Join')) {
+                            btn.textContent = 'Joined!';
+                            btn.style.background = 'rgba(73, 231, 205, 0.3)';
+                            btn.style.color = 'var(--secondary-accent)';
+                            // Reset after 2 seconds
+                            setTimeout(() => {
+                                btn.textContent = btn.textContent.replace('Joined!', 'View Challenge');
+                            }, 2000);
+                        }
+                    });
+                }
+            });
+
+            // Play button functionality for videos and podcasts (move outside nav click)
+            const playButtons = document.querySelectorAll('.play-overlay, .play-btn');
+            playButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    alert('Video/Podcast player would open here');
+                });
+            });
+
+            // Campaign card interactions (move outside nav click)
+            const campaignCards = document.querySelectorAll('.campaign-card, .creator-profile, .challenge-detailed');
+            campaignCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-5px)';
+                    card.style.boxShadow = '0 10px 30px rgba(73, 231, 205, 0.2)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                    card.style.boxShadow = '';
+                });
+            });
+
+            // NematukGPT Interactive Features
+            // Budget calculator
+            const budgetInput = document.getElementById('budget-input');
+            if (budgetInput) {
+                budgetInput.addEventListener('input', (e) => {
+                    const budget = parseFloat(e.target.value) || 0;
+                    const spent = 245;
+                    const remaining = budget - spent;
+                    const percentage = budget > 0 ? Math.round((remaining / budget) * 100) : 0;
+
+                    // Update displays if elements exist
+                    const remainingElement = document.querySelector('[data-budget="remaining"]');
+                    const percentageElement = document.querySelector('[data-budget="percentage"]');
+
+                    if (remainingElement) remainingElement.textContent = remaining + ' AED';
+                    if (percentageElement) percentageElement.textContent = percentage + '%';
+                });
+            }
+
+            // Scanner button interactions
+            document.addEventListener('click', (e) => {
+                if (e.target.textContent.includes('Scan Receipt') || e.target.textContent.includes('Scan Barcode')) {
+                    alert('Camera scanner would open here in the actual app');
+                }
+
+                // Recipe cooking interactions
+                if (e.target.textContent === 'Cook') {
+                    const recipeCard = e.target.closest('[style*="border-radius: 12px"]');
+                    if (recipeCard) {
+                        const recipeName = recipeCard.querySelector('h4')?.textContent || 'this recipe';
+                        alert(`Opening recipe for: ${recipeName}`);
+                    }
+                }
+
+                // Manual pantry item addition
+                if (e.target.textContent === 'Add Item Manually') {
+                    alert('Item addition form would open here');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

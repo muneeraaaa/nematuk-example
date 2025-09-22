@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Ne'matuk</title>
+    <link rel="shortcut icon" href="./img/logo_transparent.png" type="image/x-icon">
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #1A1D2E;
+            --primary-accent: #A450E4;
+            --secondary-accent: #49E7CD;
+            --text-light: #F0F4F8;
+            --glass-bg: rgba(26, 29, 46, 0.6);
+            --glass-border: rgba(240, 244, 248, 0.2);
+            --accent-gradient: linear-gradient(90deg, var(--primary-accent) 0%, var(--secondary-accent) 100%);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-dark); color: var(--text-light); overflow-x: hidden; }
+        #particles-js { position: fixed; width: 100vw; height: 100vh; top: 0; left: 0; z-index: -1; }
+        .dashboard-container { max-width: 1400px; margin: 0 auto; padding: 0 2rem 8rem 2rem; }
+        body::-webkit-scrollbar { width: 8px; }
+        body::-webkit-scrollbar-track { background: var(--bg-dark); }
+        body::-webkit-scrollbar-thumb { background: var(--accent-gradient); border-radius: 4px; }
+
+        header.admin-header { background: rgba(26, 29, 46, 0.8); backdrop-filter: blur(10px); padding: 1.5rem 2rem; border-radius: 20px; margin-top: 2rem; margin-bottom: 2rem; }
+        .header-title h1 { font-size: 2.2rem; font-weight: 600; }
+        .header-title p { font-size: 1.1rem; opacity: 0.8; margin: 0; }
+
+        .section-title { font-size: 1.5rem; font-weight: 500; margin-bottom: 1.5rem; opacity: 0.9; text-align: left; display: flex; align-items: center; gap: 0.75rem;}
+        .glass-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 1.5rem; transition: all 0.3s ease; }
+        
+        .page-section.hidden { display: none; }
+        .page-section.active { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card-admin { text-align: center; padding: 2rem; }
+        .stat-card-admin .value { font-size: 2.5rem; font-weight: 700; color: var(--secondary-accent); }
+        .stat-card-admin .label { font-size: 1rem; opacity: 0.8; margin-top: 0.5rem; }
+
+        .large-card { padding: 2rem; margin-bottom: 2rem; }
+        .large-card .placeholder { display: flex; justify-content: center; align-items: center; min-height: 250px; opacity: 0.6; }
+
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--glass-border); }
+        .data-table th { font-weight: 600; opacity: 0.8; }
+        .data-table tbody tr:hover { background: rgba(240, 244, 248, 0.05); }
+        .status-tag { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; }
+        .priority-high { background-color: rgba(220, 53, 69, 0.2); color: #ff4d60; }
+        .priority-medium { background-color: rgba(245, 166, 35, 0.2); color: #F5A623; }
+        .status-pending { background-color: rgba(245, 166, 35, 0.2); color: #F5A623; }
+        .action-btn { background: var(--accent-gradient); border: none; color: var(--text-light); font-weight: 600; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .action-btn.decline { background: rgba(220, 53, 69, 0.3); }
+        .action-btn:hover { box-shadow: 0 0 15px var(--secondary-accent); transform: translateY(-2px); }
+        .action-btn.decline:hover { box-shadow: 0 0 15px #dc3545; }
+
+        .analytics-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        .chart-container { height: 350px; }
+
+        .settings-item { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; transition: background 0.3s ease; }
+        .settings-item:not(:last-child) { border-bottom: 1px solid var(--glass-border); }
+        .settings-item:hover { background: rgba(240, 244, 248, 0.05); }
+        .toggle-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.3); transition: .4s; border-radius: 28px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background: var(--accent-gradient); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background: rgba(26, 29, 46, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-top: 1px solid var(--glass-border); padding: 0.5rem 0; z-index: 100; }
+        .nav-items { display: flex; justify-content: space-around; list-style: none; margin: 0; padding: 0; }
+        .nav-item a { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-light); opacity: 0.7; padding: 0.5rem; transition: all 0.3s ease; }
+        .nav-item a i { font-size: 1.5rem; margin-bottom: 0.25rem; }
+        .nav-item a span { font-size: 0.7rem; }
+        .nav-item.active a { opacity: 1; color: var(--secondary-accent); transform: translateY(-5px); }
+        .nav-item.active a i { text-shadow: 0 0 10px var(--secondary-accent); }
+
+        @media (max-width: 992px) { .analytics-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="dashboard-container">
+        <header class="admin-header">
+            <div class="header-title">
+                <h1 id="header-main-title">Welcome, Ministry of Climate Change and Environment <i class="fas fa-check-circle" style="color: var(--secondary-accent); font-size: 1.5rem;"></i></h1>
+                <p id="header-subtitle">Managing UAE's food sustainability initiatives</p>
+            </div>
+        </header>
+        <main>
+            <!-- OVERVIEW SECTION -->
+            <section id="overview-section" class="page-section active">
+                <div class="stats-grid">
+                    <div class="glass-card stat-card-admin"><div class="value">2,847 kg</div><div class="label">Surplus food saved today</div></div>
+                    <div class="glass-card stat-card-admin"><div class="value">1,423 kg</div><div class="label">CO₂ reduced today</div></div>
+                    <div class="glass-card stat-card-admin"><div class="value">156</div><div class="label">Active businesses & NGOs</div></div>
+                    <div class="glass-card stat-card-admin"><div class="value">12,847</div><div class="label">Community members</div></div>
+                </div>
+                <div class="glass-card large-card">
+                    <h2 class="section-title"><i class="fas fa-map-location-dot"></i> Live Activity Heatmap</h2>
+                    <div class="placeholder"><p>Interactive UAE map showing food rescue activity would load here.</p></div>
+                </div>
+                <div class="glass-card large-card">
+                    <h2 class="section-title"><i class="fas fa-triangle-exclamation"></i> Urgent Alerts</h2>
+                    <table class="data-table"><tbody>
+                        <tr><td>High surplus volume detected at 'Fresh Produce Mart'</td><td><span class="status-tag priority-high">High</span></td></tr>
+                        <tr><td>Low activity in Al Ain region for the past 24 hours</td><td><span class="status-tag priority-medium">Medium</span></td></tr>
+                    </tbody></table>
+                </div>
+            </section>
+
+            <!-- ALERTS SECTION -->
+            <section id="alerts-section" class="page-section hidden">
+                <h2 class="section-title">All System Alerts</h2>
+                <div class="glass-card large-card">
+                    <table class="data-table">
+                        <thead><tr><th>Alert</th><th>Location</th><th>Priority</th><th>Timestamp</th><th>Action</th></tr></thead>
+                        <tbody>
+                            <tr><td>High surplus volume</td><td>Fresh Produce Mart</td><td><span class="status-tag priority-high">High</span></td><td>15m ago</td><td><button class="action-btn">Acknowledge</button></td></tr>
+                            <tr><td>Low activity</td><td>Al Ain</td><td><span class="status-tag priority-medium">Medium</span></td><td>2h ago</td><td><button class="action-btn">Acknowledge</button></td></tr>
+                            <tr><td>New business pending</td><td>Gourmet Bites LLC</td><td><span class="status-tag status-pending">Info</span></td><td>1d ago</td><td><button class="action-btn">View</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- REQUESTS SECTION -->
+            <section id="requests-section" class="page-section hidden">
+                <h2 class="section-title">Pending Business Registrations</h2>
+                <div class="glass-card large-card">
+                    <table class="data-table">
+                        <thead><tr><th>Business Name</th><th>Trade License #</th><th>Submitted</th><th>Action</th></tr></thead>
+                        <tbody>
+                            <tr><td>The Friendly Grocer</td><td>CN-2345678</td><td>2 hours ago</td><td><button class="action-btn">Approve</button> <button class="action-btn decline">Reject</button></td></tr>
+                            <tr><td>Gourmet Bites LLC</td><td>CN-3456789</td><td>1 day ago</td><td><button class="action-btn">Approve</button> <button class="action-btn decline">Reject</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ANALYTICS SECTION -->
+            <section id="analytics-section" class="page-section hidden">
+                <h2 class="section-title">Platform Analytics</h2>
+                <div class="stats-grid">
+                    <div class="glass-card stat-card-admin"><div class="value">1.2M kg</div><div class="label">Total Food Saved</div></div>
+                    <div class="glass-card stat-card-admin"><div class="value">600k kg</div><div class="label">Total CO₂ Reduced</div></div>
+                    <div class="glass-card stat-card-admin"><div class="value">3.5M</div><div class="label">Total Revenue Saved (AED)</div></div>
+                </div>
+                <div class="analytics-grid">
+                    <div class="glass-card"><h3 style="margin-bottom: 1rem;">Food Saved Over Time (kg)</h3><div class="chart-container"><canvas id="foodSavedChart"></canvas></div></div>
+                    <div class="glass-card"><h3 style="margin-bottom: 1rem;">Platform Growth</h3><div class="chart-container"><canvas id="growthDoughnut"></canvas></div></div>
+                    <div class="glass-card" style="grid-column: 1 / -1;"><h3 style="margin-bottom: 1rem;">Top Performing Emirates</h3><div class="chart-container"><canvas id="emiratesBarChart"></canvas></div></div>
+                </div>
+            </section>
+
+            <!-- SETTINGS SECTION -->
+            <section id="settings-section" class="page-section hidden">
+                <h2 class="section-title">System Maintenance & Settings</h2>
+                <div class="glass-card">
+                    <div class="settings-item"><div><h3>System Status</h3><p style="margin:0; opacity: 0.7;">Monitor platform health</p></div><span style="color: var(--secondary-accent); font-weight: 600;">All Systems Operational</span></div>
+                    <div class="settings-item"><h3>Enable New Business Registrations</h3><label class="toggle-switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+                    <div class="settings-item"><h3>Enable New User Registrations</h3><label class="toggle-switch"><input type="checkbox" checked><span class="slider"></span></label></div>
+                    <div class="settings-item"><h3>Activate Maintenance Mode</h3><label class="toggle-switch"><input type="checkbox"><span class="slider"></span></label></div>
+                    <div class="settings-item"><h3>Push Global Notifications</h3><button class="action-btn">Send Alert</button></div>
+                    <div class="settings-item"><h3>Export Monthly Report</h3><button class="action-btn">Export Data</button></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <nav class="bottom-nav">
+        <ul class="nav-items">
+            <li class="nav-item active"><a href="#" data-target="overview-section"><i class="fas fa-tachometer-alt"></i><span>Overview</span></a></li>
+            <li class="nav-item"><a href="#" data-target="alerts-section"><i class="fas fa-bell"></i><span>Alerts</span></a></li>
+            <li class="nav-item"><a href="#" data-target="requests-section"><i class="fas fa-file-signature"></i><span>Requests</span></a></li>
+            <li class="nav-item"><a href="#" data-target="analytics-section"><i class="fas fa-chart-bar"></i><span>Analytics</span></a></li>
+            <li class="nav-item"><a href="#" data-target="settings-section"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+        </ul>
+    </nav>
+    
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            particlesJS("particles-js", { "particles": { "number": { "value": 8, "density": { "enable": true, "value_area": 800 } }, "color": { "value": ["#A450E4", "#49E7CD"] }, "shape": { "type": "circle" }, "opacity": { "value": 0.2, "random": true }, "size": { "value": 150, "random": true, "anim": { "enable": true, "speed": 1.5, "size_min": 50, "sync": false } }, "line_linked": { "enable": false }, "move": { "enable": true, "speed": 1.5, "direction": "none", "random": true, "straight": false, "out_mode": "out", "bounce": false } }, "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": false }, "onclick": { "enable": false }, "resize": true } }, "retina_detect": true });
+
+            const navItems = document.querySelectorAll('.nav-item');
+            const pageSections = document.querySelectorAll('.page-section');
+            let charts = {};
+
+            const initCharts = () => {
+                if (document.getElementById('foodSavedChart') && !charts.foodSaved) {
+                    const foodSavedCtx = document.getElementById('foodSavedChart').getContext('2d');
+                    const gradient = foodSavedCtx.createLinearGradient(0, 0, 0, 350);
+                    gradient.addColorStop(0, 'rgba(73, 231, 205, 0.4)');
+                    gradient.addColorStop(1, 'rgba(73, 231, 205, 0)');
+                    charts.foodSaved = new Chart(foodSavedCtx, { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Food Saved (kg)', data: [120000, 150000, 130000, 180000, 210000, 250000], borderColor: '#49E7CD', backgroundColor: gradient, fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: 'rgba(240, 244, 248, 0.1)' }, ticks: { color: '#F0F4F8' } }, x: { grid: { display: false }, ticks: { color: '#F0F4F8' } } }, plugins: { legend: { display: false } } } });
+                }
+                if (document.getElementById('growthDoughnut') && !charts.growth) {
+                    const growthCtx = document.getElementById('growthDoughnut').getContext('2d');
+                    charts.growth = new Chart(growthCtx, { type: 'doughnut', data: { labels: ['Community Members', 'Businesses & NGOs'], datasets: [{ data: [12847, 156], backgroundColor: ['#49E7CD', '#A450E4'], borderColor: '#1A1D2E', borderWidth: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#F0F4F8' } } } } });
+                }
+                if (document.getElementById('emiratesBarChart') && !charts.emirates) {
+                    const emiratesCtx = document.getElementById('emiratesBarChart').getContext('2d');
+                    charts.emirates = new Chart(emiratesCtx, { type: 'bar', data: { labels: ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'RAK'], datasets: [{ label: 'Food Rescued (kg)', data: [450000, 380000, 210000, 95000, 70000], backgroundColor: 'rgba(164, 80, 228, 0.7)', borderColor: 'rgba(164, 80, 228, 1)', borderWidth: 1, borderRadius: 5 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: 'rgba(240, 244, 248, 0.1)' }, ticks: { color: '#F0F4F8' } }, x: { grid: { display: false }, ticks: { color: '#F0F4F8' } } }, plugins: { legend: { display: false } } } });
+                }
+            };
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.querySelector('a').dataset.target;
+
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    pageSections.forEach(section => {
+                        section.classList.toggle('hidden', section.id !== targetId);
+                        section.classList.toggle('active', section.id === targetId);
+                    });
+
+                    if (targetId === 'analytics-section') {
+                        // Delay chart init slightly to ensure canvas is visible
+                        setTimeout(initCharts, 50);
+                    }
+                    
+                    window.scrollTo(0, 0);
+                });
+            });
+
+            // Initial chart load if analytics is the default view
+            if (document.querySelector('#analytics-section.active')) {
+                initCharts();
+            }
+        });
+    </script>
+</body>
+</html>
